@@ -1,4 +1,5 @@
 import regex as rx
+from errors import *
 
 # Define the constant variables for token types.
 # Operator tokens.
@@ -17,7 +18,7 @@ T_EOF = 'T_EOF'
 
 # Create class to generate tokens.
 class Token:
-    def __init__(self, t_type, t_value) -> None:
+    def __init__(self, t_type, t_value = None) -> None:
         self.t_type = t_type
         self.t_value = t_value
 
@@ -47,50 +48,50 @@ class Lexer:
         while self.current_char != None:
             if self.current_char in {'\n', '\t', '\r', ' '}:
                 self.advance()
-            elif rx.match("[a-zA-Z]", self.current_char):
+            elif rx.match(r"[a-zA-Z]", self.current_char):
                 self.advance()
                 pass # TEMP TILL MAKE STRING
             elif self.current_char in '0123456789':
-                self.create_number()
+                created_tokens.append(self.number_token())
                 self.advance()
             elif self.current_char == '+':
-                created_tokens.append(T_PLUS)
+                created_tokens.append(Token(T_PLUS))
                 self.advance()
             elif self.current_char == '-':
-                created_tokens.append(T_MINUS)
+                created_tokens.append(Token(T_MINUS))
                 self.advance()
             elif self.current_char == '/':
-                created_tokens.append(T_DIV)
+                created_tokens.append(Token(T_DIV))
                 self.advance()
             elif self.current_char == '*':
-                created_tokens.append(T_MUL)
+                created_tokens.append(Token(T_MUL))
                 self.advance()
             elif self.current_char == '(':
-                created_tokens.append(T_LPAREN)
+                created_tokens.append(Token(T_LPAREN))
                 self.advance()
             elif self.current_char == ')':
-                created_tokens.append(T_RPAREN)
+                created_tokens.append(Token(T_RPAREN))
                 self.advance()
             else: 
-                created_tokens.append(T_EOF)
+                return InvalidCharacterError(self.current_char)
 
+        created_tokens.append(T_EOF)
         return created_tokens
-    
-    def create_number(self):
-        '''Generates a number token, checking wether it is a float or and int'''
-        num_as_str = ''
-        contains_dot = False
 
-        while self.current_char != None and self.current_char in '.0123456789':
+    def number_token(self):
+        '''Checks whether the current number is an Int or a Float and returns 
+        a Token.'''
+
+        num_as_str = ''
+        dot_count = 0
+
+        while self.current_char != None and rx.match(r"[.0-9]", self.current_char):
             if self.current_char == '.':
-                if contains_dot:
-                    # THROW ERROR FOR TWO DOTS
-                    break
-                contains_dot = True
-                num_as_str += self.current_char
-            else:
-                num_as_str += self.current_char
+               dot_count += 1
+            num_as_str += self.current_char
+            self.advance()
         
-        if contains_dot:
-            return Token(T_FLOAT, float(num_as_str))
-        else: return Token(T_INT, int(num_as_str))
+        if dot_count == 1: return Token(T_FLOAT, float(num_as_str))
+        elif dot_count == 0: return Token(T_INT, int(num_as_str))
+        else: pass # ERROR TOO MANY DOTS
+            
