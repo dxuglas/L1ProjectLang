@@ -29,7 +29,10 @@ class Parser:
             self.token = self.tokens[self.idx]
     
     def __repr__(self) -> str:
-        return self.tokens
+        return f'{self.tokens}'
+
+    def create_expression(self):
+        left = 
 
     def create_factor(self):
         token = self.token
@@ -37,5 +40,11 @@ class Parser:
         if token.type in {T_INT, T_FLOAT}:
             self.advance()
             return NumberNode(token)
+    
+    def create_term(self):
+
         
+     
+
+    
     
