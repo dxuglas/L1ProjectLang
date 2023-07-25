@@ -1,18 +1,23 @@
+import position
+
 class Error:
-    def __init__(self, error_type, error_contents) -> None:
-        pass
+    def __init__(self, start_pos, end_pos, type, contents) -> None:
+        self.start_pos = start_pos
+        self.end_pos = end_pos
+        self.type = type
+        self.contents = contents
 
     def string(self):
-        return f'{self.error_type}: {self.error_contents}'
+        return f'{self.type}: {self.contents}'
     
 class InvalidCharacterError(Error):
-    def __init__(self, error_contents) -> None:
-        super().__init__('Invalid Character', error_contents)
+    def __init__(self, contents) -> None:
+        super().__init__('Invalid Character', contents)
 
 class SyntaxError(Error):
-    def __init__(self, error_contents) -> None:
-        self.error_type = 'Syntax Error: '
-        self.error_contents = error_contents
+    def __init__(self, contents) -> None:
+        self.type = 'Syntax Error: '
+        self.contents = contents
 
     def error_check(self):
         '''Check the type of Syntax Error to return the corresponding message'''

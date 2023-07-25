@@ -1,0 +1,3 @@
+expression : term MUL|DIV term
+term       : factor PLUS|MINUS factor
+factor     : INT|FLOAT

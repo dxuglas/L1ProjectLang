@@ -1,5 +1,6 @@
 import regex as rx
-from errors import *
+import errors
+import position
 
 # Define the constant variables for token types.
 # Operator tokens.
@@ -18,26 +19,33 @@ T_EOF = 'T_EOF'
 
 # Create class to generate tokens.
 class Token:
-    def __init__(self, t_type, t_value = None) -> None:
-        self.t_type = t_type
-        self.t_value = t_value
+    def __init__(self, type, value = None) -> None:
+        '''Initialises an instance of the token class, storing the passed
+        arguments internally'''
+        self.type = type
+        self.value = value
+
+    def __repr__(self) -> str:
+        '''Sets the representation of the class when it is printed'''
+        if self.value != None: return f'{self.type}: {self.value}'
+        else: return self.type
 
 # Create lexer class to generate tokens based on user input.
 class Lexer:
     def __init__(self, data) -> None:
+        '''Initialises the lexer, and sets it up ready to create tokens.'''
         self.data = data
-
-        self.idx = 0 
-        self.current_char = self.data[0]
+        self.idx = position.Position(0, 0, 0)
+        self.char = self.data[0]
 
     def advance(self):
         '''Advances too the next character in the data, checking to ensure that
         there isn't an index error.'''
-        self.idx += 1
-        if self.idx < len(self.data):
-            self.current_char = self.data[self.idx]
+        self.idx.advance(self.char)
+        if self.idx.idx < len(self.data):
+            self.char = self.data[self.idx.idx]
         else:
-            self.current_char = None
+            self.char = None
 
     def create_tokens(self):
         '''Creates tokens based on the data provided, checking for their type
@@ -45,37 +53,36 @@ class Lexer:
 
         created_tokens = []
 
-        while self.current_char != None:
-            if self.current_char in {'\n', '\t', '\r', ' '}:
+        while self.char != None:
+            if self.char in {'\n', '\t', '\r', ' '}:
                 self.advance()
-            elif rx.match(r"[a-zA-Z]", self.current_char):
+            elif rx.match(r"[a-zA-Z]", self.char):
                 self.advance()
                 pass # TEMP TILL MAKE STRING
-            elif self.current_char in '0123456789':
+            elif self.char in '0123456789':
                 created_tokens.append(self.number_token())
-                self.advance()
-            elif self.current_char == '+':
+            elif self.char == '+':
                 created_tokens.append(Token(T_PLUS))
                 self.advance()
-            elif self.current_char == '-':
+            elif self.char == '-':
                 created_tokens.append(Token(T_MINUS))
                 self.advance()
-            elif self.current_char == '/':
+            elif self.char == '/':
                 created_tokens.append(Token(T_DIV))
                 self.advance()
-            elif self.current_char == '*':
+            elif self.char == '*':
                 created_tokens.append(Token(T_MUL))
                 self.advance()
-            elif self.current_char == '(':
+            elif self.char == '(':
                 created_tokens.append(Token(T_LPAREN))
                 self.advance()
-            elif self.current_char == ')':
+            elif self.char == ')':
                 created_tokens.append(Token(T_RPAREN))
                 self.advance()
             else: 
-                return InvalidCharacterError(self.current_char)
+                return errors.InvalidCharacterError(self.char)
 
-        created_tokens.append(T_EOF)
+        created_tokens.append(Token(T_EOF))
         return created_tokens
 
     def number_token(self):
@@ -85,10 +92,10 @@ class Lexer:
         num_as_str = ''
         dot_count = 0
 
-        while self.current_char != None and rx.match(r"[.0-9]", self.current_char):
-            if self.current_char == '.':
+        while self.char != None and rx.match(r"[.0-9]", self.char):
+            if self.char == '.':
                dot_count += 1
-            num_as_str += self.current_char
+            num_as_str += self.char
             self.advance()
         
         if dot_count == 1: return Token(T_FLOAT, float(num_as_str))
