@@ -6,5 +6,7 @@ if __name__ == '__main__':
     lexer = lexer.Lexer(line)
     tokens = lexer.create_tokens()
     parser = _parser.Parser(tokens)
+    nodes = parser.parse()
     print(parser)
+    print(nodes)
     
