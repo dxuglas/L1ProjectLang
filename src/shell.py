@@ -10,5 +10,6 @@ if __name__ == '__main__':
     nodes = parser.parse()
     interpreter = interpreter.Interpreter()
     result = interpreter.visit(nodes)
-    print(result.value)
+    print(int(result.value) if float(result.value).is_integer() 
+          else result.value)
     

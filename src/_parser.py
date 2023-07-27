@@ -44,7 +44,7 @@ class Parser:
             op = self.token
             self.advance()
             right = self.create_term()
-            return BinaryOpNode(left, op, right)
+            left = BinaryOpNode(left, op, right)
         
         return left
 
@@ -55,7 +55,7 @@ class Parser:
             op = self.token
             self.advance()
             right = self.create_factor()
-            return BinaryOpNode(left, op, right)
+            left = BinaryOpNode(left, op, right)
         
         return left
     
