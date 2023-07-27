@@ -10,6 +10,7 @@ T_PLUS = 'T_PLUS'
 T_MINUS = 'T_MINUS'
 T_LPAREN = 'T_LPAREN'
 T_RPAREN = 'T_RPAREN'
+T_POW = 'T_POW'
 # Data Type tokens.
 T_INT = 'T_INT'
 T_FLOAT = 'T_FLOAT'
@@ -78,6 +79,9 @@ class Lexer:
                 self.advance()
             elif self.char == ')':
                 created_tokens.append(Token(T_RPAREN))
+                self.advance()
+            elif self.char == '^':
+                created_tokens.append(Token(T_POW))
                 self.advance()
             else: 
                 return errors.InvalidCharacterError(self.char)

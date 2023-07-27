@@ -7,7 +7,7 @@ class NumberNode:
         self.name = 'number_node'
       
     def __repr__(self) -> str:
-        return f'N: {self.token}'
+        return f'{self.token}'
     
 class BinaryOpNode:
     def __init__(self, left, op, right) -> None:
@@ -51,11 +51,10 @@ class Parser:
     def create_term(self):
         left = self.create_factor()
 
-        while self.token.type in (T_MUL, T_DIV):
+        while self.token.type in (T_MUL, T_DIV, T_POW):
             op = self.token
             self.advance()
             right = self.create_factor()
-            print(left, op, right)
             return BinaryOpNode(left, op, right)
         
         return left

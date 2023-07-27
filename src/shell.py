@@ -1,5 +1,6 @@
 import lexer
 import _parser
+import interpreter
 
 if __name__ == '__main__':
     line = input('> ')
@@ -7,6 +8,7 @@ if __name__ == '__main__':
     tokens = lexer.create_tokens()
     parser = _parser.Parser(tokens)
     nodes = parser.parse()
-    print(parser)
-    print(nodes)
+    interpreter = interpreter.Interpreter()
+    result = interpreter.visit(nodes)
+    print(result.value)
     
