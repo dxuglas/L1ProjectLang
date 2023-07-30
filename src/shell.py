@@ -2,14 +2,19 @@ import lexer
 import _parser
 import interpreter
 
-if __name__ == '__main__':
+def run():
     line = input('> ')
-    lexer = lexer.Lexer(line)
-    tokens = lexer.create_tokens()
-    parser = _parser.Parser(tokens)
-    nodes = parser.parse()
-    interpreter = interpreter.Interpreter()
-    result = interpreter.visit(nodes)
-    print(int(result.value) if float(result.value).is_integer() 
-          else result.value)
+
+    tokens, error = lexer.Lexer(line).create_tokens()
+    if error:
+        return error
+
+    nodes = _parser.Parser(tokens).parse()
+    result = interpreter.Interpreter().visit(nodes)
+    
+    return result.value
+
+if __name__ == '__main__':
+    result = run()
+    print(result)
     

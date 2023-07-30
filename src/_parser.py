@@ -38,26 +38,26 @@ class Parser:
         return result
 
     def create_expression(self):
-        left = self.create_term()
+        root = self.create_term()
 
         while self.token.type in (T_PLUS, T_MINUS):
             op = self.token
             self.advance()
             right = self.create_term()
-            left = BinaryOpNode(left, op, right)
+            root = BinaryOpNode(root, op, right)
         
-        return left
-
+        return root
+    
     def create_term(self):
-        left = self.create_factor()
+        root = self.create_factor()
 
         while self.token.type in (T_MUL, T_DIV, T_POW):
             op = self.token
             self.advance()
             right = self.create_factor()
-            left = BinaryOpNode(left, op, right)
+            root = BinaryOpNode(root, op, right)
         
-        return left
+        return root
     
     def create_factor(self):
         token = self.token

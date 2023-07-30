@@ -83,8 +83,8 @@ class Lexer:
             elif self.char == '^':
                 created_tokens.append(Token(T_POW))
                 self.advance()
-            else: 
-                return errors.InvalidCharacterError(self.char)
+            else:
+                return None, 'error'
 
         created_tokens.append(Token(T_EOF))
         return created_tokens
@@ -100,9 +100,9 @@ class Lexer:
             if self.char == '.':
                dot_count += 1
             num_as_str += self.char
-            self.advance()
+            self.advansce()
         
         if dot_count == 1: return Token(T_FLOAT, float(num_as_str))
         elif dot_count == 0: return Token(T_INT, int(num_as_str))
-        else: pass # ERROR TOO MANY DOTS
+        else: exit #REWORK ERROR SYSTEM
             
