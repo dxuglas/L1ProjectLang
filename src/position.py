@@ -14,5 +14,3 @@ class Position:
         
     def clone(self):
         return Position(self.idx, self.line, self.col)
-
-        

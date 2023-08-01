@@ -36,7 +36,7 @@ class Lexer:
     def __init__(self, data) -> None:
         '''Initialises the lexer, and sets it up ready to create tokens.'''
         self.data = data
-        self.idx = position.Position(0, 0, 0)
+        self.idx = position.Position(0, 1, 1)
         self.char = self.data[0]
 
     def advance(self):
@@ -61,7 +61,10 @@ class Lexer:
                 self.advance()
                 pass # TEMP TILL MAKE STRING
             elif self.char in '0123456789':
-                created_tokens.append(self.number_token())
+                num, error = self.number_token()
+                if error:
+                    return None, error
+                created_tokens.append(num)
             elif self.char == '+':
                 created_tokens.append(Token(T_PLUS))
                 self.advance()
@@ -84,10 +87,10 @@ class Lexer:
                 created_tokens.append(Token(T_POW))
                 self.advance()
             else:
-                return None, 'error'
+                return None, errors.InvalidCharacterError(self.idx, self.char)
 
         created_tokens.append(Token(T_EOF))
-        return created_tokens
+        return created_tokens, None
 
     def number_token(self):
         '''Checks whether the current number is an Int or a Float and returns 
@@ -95,14 +98,14 @@ class Lexer:
 
         num_as_str = ''
         dot_count = 0
+        start_idx = self.idx.clone()
 
         while self.char != None and rx.match(r"[.0-9]", self.char):
             if self.char == '.':
                dot_count += 1
             num_as_str += self.char
-            self.advansce()
+            self.advance()
         
-        if dot_count == 1: return Token(T_FLOAT, float(num_as_str))
-        elif dot_count == 0: return Token(T_INT, int(num_as_str))
-        else: exit #REWORK ERROR SYSTEM
-            
+        if dot_count == 1: return Token(T_FLOAT, float(num_as_str)), None
+        elif dot_count == 0: return Token(T_INT, int(num_as_str)), None
+        else: return None, errors.DecimalsInFloat(start_idx, dot_count)
