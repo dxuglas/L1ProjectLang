@@ -34,8 +34,8 @@ class Parser:
         return f'{self.tokens}'
     
     def parse(self):
-        result = self.create_expression()
-        return result
+        result, error = self.create_expression()
+        return result, error
 
     def create_expression(self):
         root = self.create_term()
