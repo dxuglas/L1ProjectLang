@@ -1,5 +1,3 @@
-import position
-
 class Error:
     '''This class is the base class for all errors. It recieves the information
     errors from its derived classes and returns a formatted string containing

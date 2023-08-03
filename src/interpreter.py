@@ -1,4 +1,3 @@
-import _parser
 from lexer import *
 
 class Number():
@@ -15,6 +14,9 @@ class Number():
         return Number(self.value * other.value)
 
     def dived_by(self, other):
+        if other.value == 0:
+            pass # RETURN ERROR DIV BYZ ERORIR
+
         return Number(self.value / other.value)
     
     def pow(self, other):
@@ -22,7 +24,7 @@ class Number():
 
 class Interpreter:
     def visit(self, node):
-        method_name = f'visit_{node.name}'
+        method_name = f'visit_{node.visit_name}'
         method = getattr(self, method_name)
         return method(node)
 
@@ -46,3 +48,9 @@ class Interpreter:
             return left.subbed_by(right)
         elif node.op.type == T_POW:
             return left.pow(right)
+        
+    def visit_unary_op_node(self, node):
+        number = self.visit(node.node)
+
+        if node.op.type == T_MINUS:
+            number = number.multed_by(Number(-1))

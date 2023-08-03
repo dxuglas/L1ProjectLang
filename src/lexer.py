@@ -1,6 +1,11 @@
 import regex as rx
 import errors
 import position
+import string 
+
+# Constants
+DIGITS = '0123456789'
+LETTERS = string.ascii_letters
 
 # Define the constant variables for token types.
 # Operator tokens.
@@ -15,8 +20,17 @@ T_POW = 'T_POW'
 T_INT = 'T_INT'
 T_FLOAT = 'T_FLOAT'
 T_STRING = 'T_STRING'
+# Identifier tokens.
+T_KEYWORD = 'T_KEYWORD'
+T_IDENTIFIER = 'T_INDENTIFIER'
+# Equal token;
+T_EQL = 'T_EQL'
 # End Of File token.
 T_EOF = 'T_EOF'
+
+KEYWORDS = [
+    'variable'
+]
 
 # Create class to generate tokens.
 class Token:
@@ -57,9 +71,8 @@ class Lexer:
         while self.char != None:
             if self.char in {'\n', '\t', '\r', ' '}:
                 self.advance()
-            elif rx.match(r"[a-zA-Z]", self.char):
-                self.advance()
-                pass # TEMP TILL MAKE STRING
+            elif rx.match(r"[.a-zA-Z]", self.char):
+                created_tokens.append(self.identier_token())
             elif self.char in '0123456789':
                 num, error = self.number_token()
                 if error:
@@ -87,7 +100,7 @@ class Lexer:
                 created_tokens.append(Token(T_POW))
                 self.advance()
             else:
-                return None, errors.InvalidCharacterError(self.idx, self.char)
+                return None, errors.InvalidCharactError(self.idx, self.char)
 
         created_tokens.append(Token(T_EOF))
         return created_tokens, None
@@ -109,3 +122,14 @@ class Lexer:
         if dot_count == 1: return Token(T_FLOAT, float(num_as_str)), None
         elif dot_count == 0: return Token(T_INT, int(num_as_str)), None
         else: return None, errors.DecimalsInFloat(start_idx, dot_count)
+
+    def identifier_token(self):
+        idf_as_str = ''
+
+        while self.char != None and rx.match(r"[.0-9a-zA-Z_]", self.char):
+            idf_as_str += self.char
+            self.advance()
+
+        if idf_as_str in KEYWORDS:
+            return Token(T_KEYWORD, idf_as_str)
+        return Token(T_IDENTIFIER, idf_as_str)

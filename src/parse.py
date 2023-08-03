@@ -1,10 +1,17 @@
 import errors
 from lexer import *
 
+class VarNode:
+    def __init__(self, name, value) -> None:
+        self.name = name
+        self.value = value
+        self.visit_name = 'var_node'
+        
+
 class NumberNode:
     def __init__(self, token) -> None:
         self.token = token
-        self.name = 'number_node'
+        self.visit_name = 'number_node'
       
     def __repr__(self) -> str:
         return f'{self.token}'
@@ -14,10 +21,19 @@ class BinaryOpNode:
         self.left = left
         self.op = op
         self.right = right
-        self.name = 'binary_op_node'
+        self.visit_name = 'binary_op_node'
 
     def __repr__(self) -> str:
         return f'({self.left} {self.op} {self.right})'
+    
+class UnaryOpNode:
+    def __init__(self, op, node) -> None:
+        self.op = op
+        self.node = node
+        self.visit_name = 'unary_op_node'
+
+    def __repr__(self) -> str:
+        return f'{self.op}{self.node}'
     
 class Parser:
     def __init__(self, tokens) -> None:
@@ -34,8 +50,8 @@ class Parser:
         return f'{self.tokens}'
     
     def parse(self):
-        result, error = self.create_expression()
-        return result, error
+        result = self.create_expression()
+        return result 
 
     def create_expression(self):
         root = self.create_term()
@@ -62,13 +78,19 @@ class Parser:
     def create_factor(self):
         token = self.token
 
-        if token.type in (T_INT, T_FLOAT):
+        if self.token.type == (T_PLUS, T_MINUS):
+            op = token
+            self.advance()
+            node = self.create_factor()
+            return UnaryOpNode(op, node)
+        elif token.type in (T_INT, T_FLOAT):
             self.advance()
             return NumberNode(token)
-    
-
-        
-     
-
-    
-    
+        elif token.type == T_LPAREN:
+            self.advance()
+            expression = self.create_expression()
+            if self.token.type == T_RPAREN:
+                return expression
+            else:
+                #ERROR NO END PAREN
+                pass

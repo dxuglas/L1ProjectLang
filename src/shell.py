@@ -1,5 +1,5 @@
 import lexer
-import _parser
+import parse
 import interpreter
 
 def run():
@@ -12,7 +12,7 @@ def run():
     if error:
         return error
 
-    nodes, error = _parser.Parser(tokens).parse()
+    nodes = parse.Parser(tokens).parse()
     if error:
         return error
     result = interpreter.Interpreter().visit(nodes)
@@ -20,7 +20,8 @@ def run():
     return result.value
 
 if __name__ == '__main__':
-    result = run()
-    print(result)
+    while True:
+        result = run()
+        print(result)
     
     
