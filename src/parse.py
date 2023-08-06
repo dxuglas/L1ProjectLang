@@ -1,12 +1,16 @@
 import errors
 from lexer import *
 
-class VarNode:
+class VarAssignNode:
     def __init__(self, name, value) -> None:
         self.name = name
         self.value = value
-        self.visit_name = 'var_node'
+        self.visit_name = 'var_assign_node'
         
+class VarAccessNode:
+    def __init__(self, name) -> None:
+        self.name = name
+        self.visit_name = 'var_access_node'
 
 class NumberNode:
     def __init__(self, token) -> None:
@@ -54,6 +58,23 @@ class Parser:
         return result 
 
     def create_expression(self):
+        if self.token == 'VAR':
+            self.advance()
+
+            if self.token.type != T_IDENTIFIER:
+                return None # NEED TO ADD ERROR
+            
+            name = self.token
+            self.advance()
+            
+            if self.token.type != T_EQL:
+                return None # NEED TO ADD ERROR
+            
+            self.advance()
+            value = self.create_expression()
+
+            return VarAssignNode(name, value)
+
         root = self.create_term()
 
         while self.token.type in (T_PLUS, T_MINUS):
@@ -77,8 +98,7 @@ class Parser:
     
     def create_factor(self):
         token = self.token
-
-        if self.token.type == (T_PLUS, T_MINUS):
+        if token.type in (T_PLUS, T_MINUS):
             op = token
             self.advance()
             node = self.create_factor()
@@ -94,3 +114,5 @@ class Parser:
             else:
                 #ERROR NO END PAREN
                 pass
+        elif token.type == T_IDENTIFIER:
+            return VarAccessNode(token)

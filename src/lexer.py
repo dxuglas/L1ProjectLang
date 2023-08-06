@@ -72,7 +72,7 @@ class Lexer:
             if self.char in {'\n', '\t', '\r', ' '}:
                 self.advance()
             elif rx.match(r"[.a-zA-Z]", self.char):
-                created_tokens.append(self.identier_token())
+                created_tokens.append(self.identifier_token())
             elif self.char in '0123456789':
                 num, error = self.number_token()
                 if error:
@@ -98,6 +98,9 @@ class Lexer:
                 self.advance()
             elif self.char == '^':
                 created_tokens.append(Token(T_POW))
+                self.advance()
+            elif self.char == '=':
+                created_tokens.append(Token(T_EQL))
                 self.advance()
             else:
                 return None, errors.InvalidCharactError(self.idx, self.char)

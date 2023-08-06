@@ -31,6 +31,10 @@ class Interpreter:
     def no_visit_defined(self, node):
         print('no method defined')
 
+    def visit_var_assign_node(self, node):
+        name = node.name.value
+        value = self.visit(node.value)
+
     def visit_number_node(self, node):
         return Number(node.token.value)
 
@@ -54,3 +58,5 @@ class Interpreter:
 
         if node.op.type == T_MINUS:
             number = number.multed_by(Number(-1))
+
+        return number
