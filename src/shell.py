@@ -15,7 +15,11 @@ def run():
     nodes = parse.Parser(tokens).parse()
     if error:
         return error
-    result = interpreter.Interpreter().visit(nodes)
+    
+    table = interpreter.SymbolTable()
+    context = interpreter.Context('main')
+    context.table = table
+    result = interpreter.Interpreter().visit(nodes, context)
     
     return result.value
 

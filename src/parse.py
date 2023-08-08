@@ -58,7 +58,7 @@ class Parser:
         return result 
 
     def create_expression(self):
-        if self.token == 'VAR':
+        if self.token.value == 'VAR':
             self.advance()
 
             if self.token.type != T_IDENTIFIER:
