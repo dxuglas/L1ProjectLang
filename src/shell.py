@@ -2,12 +2,16 @@ import lexer
 import parse
 import interpreter
 
+import sys
+
 def run():
     '''In this function we feed data through the transpiler'''
-    line = input('> ')
+
+    data = sys.argv[1]
+    data = open(data)
 
     # Creates an instance of the lexer class, and then generates tokens.
-    tokens, error = lexer.Lexer(line).create_tokens() 
+    tokens, error = lexer.Lexer(data.read()).create_tokens() 
     # If an error is found during the lexical analysis, return the error.
     if error:
         return error
@@ -19,13 +23,18 @@ def run():
     table = interpreter.SymbolTable()
     context = interpreter.Context('main')
     context.table = table
-    result = interpreter.Interpreter().visit(nodes, context)
-    
-    return result.value
+    results = interpreter.Interpreter().primary_visit(nodes, context)
+    return results
 
 if __name__ == '__main__':
-    while True:
-        result = run()
-        print(result)
+        results = run()
+        for result in results:
+            if result == None:
+                continue
+            if isinstance(result, list):
+                for r in result:
+                     print(r.value)
+                continue
+            print(result.value)
     
     

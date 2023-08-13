@@ -1,16 +1,25 @@
 import errors
 from lexer import *
 
+class FunctionAssignNode:
+    def __init__(self, name, contents) -> None:
+        self.name = name
+        self.contents = contents
+        self.visit_name = 'function_assign_node'
+
+    def __repr__(self) -> str:
+        return self.name
+
 class VarAssignNode:
     def __init__(self, name, value) -> None:
         self.name = name
         self.value = value
         self.visit_name = 'var_assign_node'
         
-class VarAccessNode:
+class AccessNode:
     def __init__(self, name) -> None:
         self.name = name
-        self.visit_name = 'var_access_node'
+        self.visit_name = 'access_node'
 
 class NumberNode:
     def __init__(self, token) -> None:
@@ -54,11 +63,22 @@ class Parser:
         return f'{self.tokens}'
     
     def parse(self):
-        result = self.create_expression()
+        result = self.create_statments()
         return result 
 
+    def create_statments(self):
+        statments = []
+        while self.token.type != T_EOF: 
+            statments.append(self.create_expression())
+            if self.token.value == 'end':
+                self.advance()
+            while self.token.type == T_NL:
+                self.advance()
+        return statments
+
     def create_expression(self):
-        if self.token.value == 'VAR':
+        
+        if self.token.value == 'variable':
             self.advance()
 
             if self.token.type != T_IDENTIFIER:
@@ -72,8 +92,30 @@ class Parser:
             
             self.advance()
             value = self.create_expression()
-
+            
             return VarAssignNode(name, value)
+
+        if self.token.value == 'function':
+            self.advance()
+
+            if self.token.type != T_IDENTIFIER:
+                return None # need to add error
+            
+            name = self.token.value
+            self.advance()
+            self.advance()
+
+            contents = []
+            
+            while self.token.value != 'end':
+                contents.append(self.create_expression())
+                if self.token.type == T_NL:
+                    self.advance()
+                    continue
+                else:
+                    break
+
+            return FunctionAssignNode(name, contents)
 
         root = self.create_term()
 
@@ -115,4 +157,5 @@ class Parser:
                 #ERROR NO END PAREN
                 pass
         elif token.type == T_IDENTIFIER:
-            return VarAccessNode(token)
+            self.advance()
+            return AccessNode(token)

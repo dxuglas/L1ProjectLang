@@ -23,13 +23,16 @@ T_STRING = 'T_STRING'
 # Identifier tokens.
 T_KEYWORD = 'T_KEYWORD'
 T_IDENTIFIER = 'T_INDENTIFIER'
-# Equal token;
+# Equal token.
 T_EQL = 'T_EQL'
-# End Of File token.
+# End tokens.
 T_EOF = 'T_EOF'
+T_NL = 'T_NL'
 
 KEYWORDS = [
-    'variable'
+    'variable',
+    'function',
+    'end'
 ]
 
 # Create class to generate tokens.
@@ -69,7 +72,10 @@ class Lexer:
         created_tokens = []
 
         while self.char != None:
-            if self.char in {'\n', '\t', '\r', ' '}:
+            if self.char in {'\t', '\r', ' '}:
+                self.advance()
+            elif self.char == '\n':
+                created_tokens.append(Token(T_NL))
                 self.advance()
             elif rx.match(r"[.a-zA-Z]", self.char):
                 created_tokens.append(self.identifier_token())
@@ -103,8 +109,8 @@ class Lexer:
                 created_tokens.append(Token(T_EQL))
                 self.advance()
             else:
-                return None, errors.InvalidCharactError(self.idx, self.char)
-
+                return None, errors.InvalidCharacterError(self.idx, self.char)
+            
         created_tokens.append(Token(T_EOF))
         return created_tokens, None
 
