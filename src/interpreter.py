@@ -71,6 +71,18 @@ class Interpreter:
         value = context.table.get_value(name)
         return value
 
+    def visit_if_node(self, node, context):
+        case = node.case
+        contents = []
+        if case[1].type == T_EQLS:
+            if self.secondary_visit(case[0], context).value == self.secondary_visit(case[2], context).value:
+                for content in node.contents:
+                    contents.append(self.secondary_visit(content, context))
+            else:
+                for content in node.else_contents:
+                    contents.append(self.secondary_visit(content, context))
+        return contents
+
     def visit_number_node(self, node, context):
         return Number(node.token.value)
 
@@ -90,7 +102,7 @@ class Interpreter:
             return left.pow(right)
         
     def visit_unary_op_node(self, node, context):
-        number = self.secondary_visit(node.node)
+        number = self.secondary_visit(node.node, context)
 
         if node.op.type == T_MINUS:
             number = number.multed_by(Number(-1))

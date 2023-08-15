@@ -21,6 +21,13 @@ class AccessNode:
         self.name = name
         self.visit_name = 'access_node'
 
+class IfNode:
+    def __init__(self, case, contents, else_contents = None) -> None:
+        self.case = case
+        self.contents = contents
+        self.else_contents = else_contents
+        self.visit_name = 'if_node'
+
 class NumberNode:
     def __init__(self, token) -> None:
         self.token = token
@@ -94,6 +101,50 @@ class Parser:
             value = self.create_expression()
             
             return VarAssignNode(name, value)
+
+        if self.token.value == 'if':
+            self.advance()
+            
+            case = []
+            if self.token.type in (T_IDENTIFIER, T_INT, T_FLOAT):
+                case.append(self.create_expression())
+            else:
+                return None # need to add error
+
+            if self.token.type == T_EQLS:
+                case.append(self.token)
+
+            self.advance()
+
+            if self.token.type in (T_IDENTIFIER, T_INT, T_FLOAT):
+                case.append(self.create_expression())
+            else:
+                return None # need to add error
+            
+            self.advance()
+
+            contents = []
+            
+            while self.token.value not in ('else', 'end'):
+                contents.append(self.create_expression())
+                if self.token.type == T_NL:
+                    self.advance()
+                    continue
+                else:
+                    break
+
+            if self.token.value == 'else':
+                else_contents = []
+                self.advance()
+                self.advance()
+                while self.token.value != 'end':
+                    else_contents.append(self.create_expression())
+                    if self.token.type == T_NL:
+                        self.advance()
+                        continue
+                    else:
+                        break
+            return IfNode(case, contents, else_contents)
 
         if self.token.value == 'function':
             self.advance()

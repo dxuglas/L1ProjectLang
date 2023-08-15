@@ -25,6 +25,7 @@ T_KEYWORD = 'T_KEYWORD'
 T_IDENTIFIER = 'T_INDENTIFIER'
 # Equal token.
 T_EQL = 'T_EQL'
+T_EQLS = 'T_EQLS'
 # End tokens.
 T_EOF = 'T_EOF'
 T_NL = 'T_NL'
@@ -32,6 +33,8 @@ T_NL = 'T_NL'
 KEYWORDS = [
     'variable',
     'function',
+    'if',
+    'else',
     'end'
 ]
 
@@ -106,8 +109,12 @@ class Lexer:
                 created_tokens.append(Token(T_POW))
                 self.advance()
             elif self.char == '=':
-                created_tokens.append(Token(T_EQL))
                 self.advance()
+                if self.char == '=':
+                    created_tokens.append(Token(T_EQLS))
+                    self.advance()
+                else:
+                    created_tokens.append(Token(T_EQL))
             else:
                 return None, errors.InvalidCharacterError(self.idx, self.char)
             
