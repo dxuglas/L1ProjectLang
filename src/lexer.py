@@ -26,6 +26,8 @@ T_IDENTIFIER = 'T_INDENTIFIER'
 # Equal token.
 T_EQL = 'T_EQL'
 T_EQLS = 'T_EQLS'
+T_LESS = 'T_LESS'
+T_GRT = 'T_GRT'
 # End tokens.
 T_EOF = 'T_EOF'
 T_NL = 'T_NL'
@@ -34,7 +36,9 @@ KEYWORDS = [
     'variable',
     'function',
     'if',
-    'else',
+    'otherwise',
+    'loop',
+    'while'
     'end'
 ]
 
@@ -107,6 +111,12 @@ class Lexer:
                 self.advance()
             elif self.char == '^':
                 created_tokens.append(Token(T_POW))
+                self.advance()
+            elif self.char == '<':
+                created_tokens.append(Token(T_LESS))
+                self.advance()
+            elif self.char == '>':
+                created_tokens.append(Token(T_GRT))
                 self.advance()
             elif self.char == '=':
                 self.advance()

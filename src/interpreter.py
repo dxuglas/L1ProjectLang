@@ -83,6 +83,26 @@ class Interpreter:
                     contents.append(self.secondary_visit(content, context))
         return contents
 
+    def visit_loop_node(self, node, context):
+        contents = []
+        for i in range(self.secondary_visit(node.loop_count, context).value):
+            for content in node.content:
+                contents.append(self.secondary_visit(content, context))
+
+        return contents
+    
+    def visit_while_node(self, node, context):
+        contents = []
+        case = node.case
+        if case[1].type == T_LESS:
+            while True:
+                if self.secondary_visit(case[0], context).value < self.secondary_visit(case[2], context).value:
+                    for content in node.content:
+                        contents.append(self.secondary_visit(content, context))
+                else:
+                    break
+        return contents
+
     def visit_number_node(self, node, context):
         return Number(node.token.value)
 

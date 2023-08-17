@@ -22,11 +22,23 @@ class AccessNode:
         self.visit_name = 'access_node'
 
 class IfNode:
-    def __init__(self, case, contents, else_contents = None) -> None:
+    def __init__(self, case, content, else_contents = None) -> None:
         self.case = case
-        self.contents = contents
+        self.contents = content
         self.else_contents = else_contents
         self.visit_name = 'if_node'
+
+class LoopNode:
+    def __init__(self, loop_count, content) -> None:
+        self.loop_count = loop_count
+        self.content = content
+        self.visit_name = 'loop_node'
+
+class WhileNode:
+    def __init__(self, case, content) -> None:
+        self.case = case
+        self.content = content
+        self.visit_name = 'while_node'
 
 class NumberNode:
     def __init__(self, token) -> None:
@@ -104,8 +116,8 @@ class Parser:
 
         if self.token.value == 'if':
             self.advance()
-            
             case = []
+
             if self.token.type in (T_IDENTIFIER, T_INT, T_FLOAT):
                 case.append(self.create_expression())
             else:
@@ -121,11 +133,12 @@ class Parser:
             else:
                 return None # need to add error
             
-            self.advance()
+            while self.token.type == T_NL:
+                self.advance()
 
             contents = []
             
-            while self.token.value not in ('else', 'end'):
+            while self.token.value not in ('otherwise', 'end'):
                 contents.append(self.create_expression())
                 if self.token.type == T_NL:
                     self.advance()
@@ -133,7 +146,7 @@ class Parser:
                 else:
                     break
 
-            if self.token.value == 'else':
+            while self.token.value == 'otherwise':
                 else_contents = []
                 self.advance()
                 self.advance()
@@ -144,7 +157,68 @@ class Parser:
                         continue
                     else:
                         break
-            return IfNode(case, contents, else_contents)
+
+            return IfNode(case, contents)
+        
+        if self.token.value == 'loop':
+            self.advance()
+
+            loop_count = None
+
+            if self.token.type in (T_IDENTIFIER, T_INT, T_FLOAT):
+                loop_count = self.create_expression()
+            else:
+                return None # need to add error
+            
+            while self.token.type == T_NL:
+                self.advance()
+
+            contents = []
+
+            while self.token.value != 'end':
+                contents.append(self.create_expression())
+                if self.token.type == T_NL:
+                    self.advance()
+                    continue
+                else:
+                    break
+
+            return LoopNode(loop_count, contents)
+        
+        if self.token.value == 'while':
+            self.advance()
+
+            case = []
+
+            if self.token.type in (T_IDENTIFIER, T_INT, T_FLOAT):
+                case.append(self.create_expression())
+            else:
+                return None # need to add error
+
+            if self.token.type in (T_EQLS, T_LESS, T_GRT):
+                case.append(self.token)
+
+            self.advance()
+
+            if self.token.type in (T_IDENTIFIER, T_INT, T_FLOAT):
+                case.append(self.create_expression())
+            else:
+                return None # need to add error
+            
+            while self.token.type == T_NL:
+                self.advance()
+
+            contents = []
+            
+            while self.token.value != 'end':
+                contents.append(self.create_expression())
+                if self.token.type == T_NL:
+                    self.advance()
+                    continue
+                else:
+                    break
+            
+            return WhileNode(case, contents)
 
         if self.token.value == 'function':
             self.advance()
