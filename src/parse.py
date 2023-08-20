@@ -1,4 +1,5 @@
 import errors
+import position
 from lexer import *
 
 class FunctionAssignNode:
@@ -75,13 +76,14 @@ class UnaryOpNode:
 class Parser:
     def __init__(self, tokens) -> None:
         self.tokens = tokens
-        self.idx = -1 
+        self.token = self.tokens[0]
+        self.idx = position.Position(-1, 0, 0)
         self.advance()
 
     def advance(self):
-        self.idx += 1
-        if self.idx < len(self.tokens):
-            self.token = self.tokens[self.idx]
+        self.idx.advance(self.token)
+        if self.idx.idx < len(self.tokens):
+            self.token = self.tokens[self.idx.idx]
     
     def __repr__(self) -> str:
         return f'{self.tokens}'
@@ -106,7 +108,7 @@ class Parser:
             self.advance()
 
             if self.token.type != T_IDENTIFIER:
-                return None # NEED TO ADD ERROR
+                return errors.MissingIdentifier(self.idx, 'variable')
             
             name = self.token
             self.advance()
@@ -161,7 +163,6 @@ class Parser:
                     else:
                         break
             return IfNode(case, contents)
-        
         if self.token.value == 'loop':
             self.advance()
 

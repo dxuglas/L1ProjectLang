@@ -37,5 +37,11 @@ class DecimalsInFloat(SyntaxError):
     def __init__(self, idx, dot_count) -> None:
         '''Creates a super of the parent Syntax Error class allowing us to 
         return our error message'''
-        super().__init__(idx, (f'Expected Single Decimal in Floating Point ' 
+        super().__init__(idx, ('Expected Single Decimal in Floating Point ' 
                                'Number, recieved'), dot_count)
+        
+class MissingIdentifier(SyntaxError):
+    '''This class generates an error when an identifier is missing from the
+    users code.'''
+    def __init__(self, idx, type) -> None:
+        super().__init__(idx, 'Expected Identifier following ', type)

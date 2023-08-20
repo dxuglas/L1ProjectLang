@@ -39,7 +39,7 @@ KEYWORDS = [
     'if',
     'otherwise',
     'loop',
-    'while'
+    'while' # FIX THIS NEEDS COMMA WTF
     'end'
 ]
 

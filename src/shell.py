@@ -16,11 +16,11 @@ def run():
     # If an error is returned by the lexer, return the error.
     if error:
         return error
-
     nodes = parse.Parser(tokens).parse()
     if error:
         return error
-
+    
+    print(nodes)
     table = interpreter.SymbolTable()
     context = interpreter.Context('main')
     context.table = table
@@ -32,14 +32,8 @@ if __name__ == '__main__':
         for result in results:
             if result == None:
                 continue
-            if isinstance(result, list):
-                for rs in result:
-                     if rs != None:
-                        if isinstance(rs, list):
-                            for r in rs:
-                                print(r.value)
-                        print(rs.value)
-                continue
-            print(result.value)
-    
-    
+            elif isinstance(result, list):
+                for res in result:
+                    print(res)
+            else:
+                print(result.value)
