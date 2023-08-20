@@ -1,4 +1,16 @@
 from lexer import *
+import operator
+
+ops = {
+    'T_EQLS' : operator.eq,
+    'T_NEQL' : operator.ne,
+    'T_LESS' : operator.lt,
+    'T_GRT'  : operator.gt
+}
+
+class String():
+    def __init__(self, value) -> None:
+        self.value = value
 
 class Number():
     def __init__(self, value) -> None:
@@ -50,9 +62,15 @@ class Interpreter:
             method_name = f'visit_{node.visit_name}'
             method = getattr(self, method_name)
             return method(node, context)
+    
+    def evaluate_case(self, node, context):
+        '''This function takes a node as an input and evaluates whether its
+        case is True or False and then returns the value'''
+        primary = self.secondary_visit(node.case[0], context).value
+        op = node.case[1]
+        secondary = self.secondary_visit(node.case[2], context).value
 
-    def no_visit_defined(self, node):
-        print('no method defined')
+        return ops[f'{op}'](primary, secondary)
 
     def visit_var_assign_node(self, node, context):
         name = node.name.value
@@ -72,15 +90,15 @@ class Interpreter:
         return value
 
     def visit_if_node(self, node, context):
-        case = node.case
+        '''This is the visit function for If nodes which takes a node as input,
+        evaluates the case, and then returns the correct contents of the node.'''
         contents = []
-        if case[1].type == T_EQLS:
-            if self.secondary_visit(case[0], context).value == self.secondary_visit(case[2], context).value:
-                for content in node.contents:
-                    contents.append(self.secondary_visit(content, context))
-            else:
-                for content in node.else_contents:
-                    contents.append(self.secondary_visit(content, context))
+        if self.evaluate_case(node, context):
+            for content in node.contents:
+                contents.append(self.secondary_visit(content, context))
+        elif node.else_contents:
+            for content in node.else_contents:
+                contents.append(self.secondary_visit(content, context))
         return contents
 
     def visit_loop_node(self, node, context):
@@ -93,15 +111,16 @@ class Interpreter:
     
     def visit_while_node(self, node, context):
         contents = []
-        case = node.case
-        if case[1].type == T_LESS:
-            while True:
-                if self.secondary_visit(case[0], context).value < self.secondary_visit(case[2], context).value:
-                    for content in node.content:
-                        contents.append(self.secondary_visit(content, context))
-                else:
-                    break
+        while True:
+            if self.evaluate_case(node, context):
+                for content in node.content:
+                    contents.append(self.secondary_visit(content, context))
+            else:
+                break
         return contents
+
+    def visit_string_node(self, node, context):
+        return String(node.token.value)
 
     def visit_number_node(self, node, context):
         return Number(node.token.value)

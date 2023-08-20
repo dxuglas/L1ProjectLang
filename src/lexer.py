@@ -26,6 +26,7 @@ T_IDENTIFIER = 'T_INDENTIFIER'
 # Equal token.
 T_EQL = 'T_EQL'
 T_EQLS = 'T_EQLS'
+T_NEQL = 'T_NEQL'
 T_LESS = 'T_LESS'
 T_GRT = 'T_GRT'
 # End tokens.
@@ -81,6 +82,9 @@ class Lexer:
         while self.char != None:
             if self.char in {'\t', '\r', ' '}:
                 self.advance()
+            elif self.char == '#':
+                while self.char != '\n':
+                    self.advance() 
             elif self.char == '\n':
                 created_tokens.append(Token(T_NL))
                 self.advance()
@@ -91,6 +95,13 @@ class Lexer:
                 if error:
                     return None, error
                 created_tokens.append(num)
+            elif self.char == "'":
+                created_tokens.append(self.string_token())
+            elif self.char == "!":
+                self.advance()
+                if self.char == '=':
+                    created_tokens.append(Token(T_NEQL))
+                    self.advance()
             elif self.char == '+':
                 created_tokens.append(Token(T_PLUS))
                 self.advance()
@@ -159,3 +170,15 @@ class Lexer:
         if idf_as_str in KEYWORDS:
             return Token(T_KEYWORD, idf_as_str)
         return Token(T_IDENTIFIER, idf_as_str)
+    
+    def string_token(self):
+        string = ''
+        self.advance()
+
+        while self.char != None and self.char != "'":
+            string += self.char
+            self.advance()
+
+        self.advance()
+
+        return Token(T_STRING, string)

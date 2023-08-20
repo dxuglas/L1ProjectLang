@@ -40,6 +40,11 @@ class WhileNode:
         self.content = content
         self.visit_name = 'while_node'
 
+class StringNode:
+    def __init__(self, token) -> None:
+        self.token = token
+        self.visit_name = 'string_node'
+
 class NumberNode:
     def __init__(self, token) -> None:
         self.token = token
@@ -111,7 +116,6 @@ class Parser:
             
             self.advance()
             value = self.create_expression()
-            
             return VarAssignNode(name, value)
 
         if self.token.value == 'if':
@@ -123,21 +127,18 @@ class Parser:
             else:
                 return None # need to add error
 
-            if self.token.type == T_EQLS:
+            if self.token.type in (T_EQLS, T_GRT, T_LESS, T_NEQL):
                 case.append(self.token)
-
             self.advance()
 
             if self.token.type in (T_IDENTIFIER, T_INT, T_FLOAT):
                 case.append(self.create_expression())
             else:
                 return None # need to add error
-            
             while self.token.type == T_NL:
                 self.advance()
 
             contents = []
-            
             while self.token.value not in ('otherwise', 'end'):
                 contents.append(self.create_expression())
                 if self.token.type == T_NL:
@@ -148,16 +149,17 @@ class Parser:
 
             while self.token.value == 'otherwise':
                 else_contents = []
-                self.advance()
-                self.advance()
-                while self.token.value != 'end':
+                while self.token.type == T_NL:
+                    self.advance()
+                while True:
+                    if self.token.value == 'end':
+                        break
                     else_contents.append(self.create_expression())
                     if self.token.type == T_NL:
                         self.advance()
                         continue
                     else:
                         break
-
             return IfNode(case, contents)
         
         if self.token.value == 'loop':
@@ -175,7 +177,9 @@ class Parser:
 
             contents = []
 
-            while self.token.value != 'end':
+            while True:
+                if self.token.value == 'end':
+                    break
                 contents.append(self.create_expression())
                 if self.token.type == T_NL:
                     self.advance()
@@ -195,7 +199,7 @@ class Parser:
             else:
                 return None # need to add error
 
-            if self.token.type in (T_EQLS, T_LESS, T_GRT):
+            if self.token.type in (T_EQLS, T_LESS, T_GRT, T_NEQL):
                 case.append(self.token)
 
             self.advance()
@@ -210,7 +214,9 @@ class Parser:
 
             contents = []
             
-            while self.token.value != 'end':
+            while True:
+                if self.token.value == 'end':
+                    break
                 contents.append(self.create_expression())
                 if self.token.type == T_NL:
                     self.advance()
@@ -273,6 +279,9 @@ class Parser:
         elif token.type in (T_INT, T_FLOAT):
             self.advance()
             return NumberNode(token)
+        elif token.type == T_STRING:
+            self.advance()
+            return StringNode(token)
         elif token.type == T_LPAREN:
             self.advance()
             expression = self.create_expression()

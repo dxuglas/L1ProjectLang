@@ -1,7 +1,11 @@
 variable a = 10
 variable b = 20
 
-while a < b
+# comment
+
+variable c = 'a'
+variable d = 'ab'
+
+if a + 10 == b
 1 + 1
-variable b = b + 1
 end
