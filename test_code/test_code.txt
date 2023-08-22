@@ -3,7 +3,3 @@ variable b = 20
 
 # comment
 
-variable rosa = 'rosa'
-variable noah = 'noah'
-
-variable = 'noah'

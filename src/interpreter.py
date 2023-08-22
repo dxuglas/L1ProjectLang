@@ -12,6 +12,9 @@ class String():
     def __init__(self, value) -> None:
         self.value = value
 
+    def __repr__(self) -> str:
+        return f'{self.value}'
+
 class Number():
     def __init__(self, value) -> None:
         self.value = value
@@ -34,6 +37,9 @@ class Number():
     def pow(self, other):
         return Number(self.value ** other.value)
     
+    def __repr__(self) -> str:
+        return f'{self.value}'
+    
 class Context():
     def __init__(self, name) -> None:
         self.name = name
@@ -55,7 +61,8 @@ class Interpreter:
     def primary_visit(self, nodes, context):
         values = []
         for node in nodes:
-            values.append(self.secondary_visit(node, context))
+            value = self.secondary_visit(node, context)
+            if value != None: values.append(value)
         return values
 
     def secondary_visit(self, node, context):
@@ -63,6 +70,8 @@ class Interpreter:
             method = getattr(self, method_name)
             return method(node, context)
     
+
+
     def evaluate_case(self, node, context):
         '''This function takes a node as an input and evaluates whether its
         case is True or False and then returns the value'''
@@ -71,6 +80,9 @@ class Interpreter:
         secondary = self.secondary_visit(node.case[2], context).value
 
         return ops[f'{op}'](primary, secondary)
+
+    def visit_error_node(self, node, context):
+        return node.error
 
     def visit_var_assign_node(self, node, context):
         name = node.name.value
@@ -117,6 +129,7 @@ class Interpreter:
                     contents.append(self.secondary_visit(content, context))
             else:
                 break
+
         return contents
 
     def visit_string_node(self, node, context):
@@ -128,7 +141,6 @@ class Interpreter:
     def visit_binary_op_node(self, node, context):
         left = self.secondary_visit(node.left, context)
         right = self.secondary_visit(node.right, context)
-
         if node.op.type == T_MUL:
             return left.multed_by(right)
         elif node.op.type == T_DIV:

@@ -44,4 +44,4 @@ class MissingIdentifier(SyntaxError):
     '''This class generates an error when an identifier is missing from the
     users code.'''
     def __init__(self, idx, type) -> None:
-        super().__init__(idx, 'Expected Identifier following ', type)
+        super().__init__(idx, 'Expected Identifier following', "'" + type + "'")

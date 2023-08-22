@@ -2,6 +2,11 @@ import errors
 import position
 from lexer import *
 
+class ErrorNode:
+    def __init__(self, error) -> None:
+        self.error = error
+        self.visit_name = 'error_node'
+
 class FunctionAssignNode:
     def __init__(self, name, contents) -> None:
         self.name = name
@@ -104,11 +109,13 @@ class Parser:
 
     def create_expression(self):
         
+        error = None
+
         if self.token.value == 'variable':
             self.advance()
 
             if self.token.type != T_IDENTIFIER:
-                return errors.MissingIdentifier(self.idx, 'variable')
+                error = ErrorNode(errors.MissingIdentifier(self.idx, 'variable'))
             
             name = self.token
             self.advance()
@@ -118,6 +125,10 @@ class Parser:
             
             self.advance()
             value = self.create_expression()
+
+            if error:
+                return error
+            
             return VarAssignNode(name, value)
 
         if self.token.value == 'if':
@@ -231,7 +242,7 @@ class Parser:
             self.advance()
 
             if self.token.type != T_IDENTIFIER:
-                return None # need to add error
+                error = ErrorNode(errors.MissingIdentifier(self.idx, 'function'))
             
             name = self.token.value
             self.advance()
@@ -246,6 +257,9 @@ class Parser:
                     continue
                 else:
                     break
+
+            if error:
+                return error
 
             return FunctionAssignNode(name, contents)
 

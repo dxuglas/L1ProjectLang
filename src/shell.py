@@ -19,8 +19,7 @@ def run():
     nodes = parse.Parser(tokens).parse()
     if error:
         return error
-    
-    print(nodes)
+
     table = interpreter.SymbolTable()
     context = interpreter.Context('main')
     context.table = table
@@ -30,10 +29,8 @@ def run():
 if __name__ == '__main__':
         results = run()
         for result in results:
-            if result == None:
-                continue
-            elif isinstance(result, list):
-                for res in result:
-                    print(res)
+            if isinstance(result, list):
+                for secondary in result:
+                    print(secondary)
             else:
-                print(result.value)
+                print(result)
