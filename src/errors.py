@@ -40,8 +40,8 @@ class DecimalsInFloat(SyntaxError):
         super().__init__(idx, ('Expected Single Decimal in Floating Point ' 
                                'Number, recieved'), dot_count)
         
-class MissingIdentifier(SyntaxError):
-    '''This class generates an error when an identifier is missing from the
-    users code.'''
-    def __init__(self, idx, type) -> None:
-        super().__init__(idx, 'Expected Identifier following', "'" + type + "'")
+class Expected(SyntaxError):
+    '''This class generates an error when the parser expects the code to follow
+    a structure, but it does not''' 
+    def __init__(self, idx, expected, type) -> None:
+        super().__init__(idx, f'Expected {expected} following', "'" + type + "'")

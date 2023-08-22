@@ -82,7 +82,7 @@ class Parser:
     def __init__(self, tokens) -> None:
         self.tokens = tokens
         self.token = self.tokens[0]
-        self.idx = position.Position(-1, 0, 0)
+        self.idx = position.Position(-1, 1, 1)
         self.advance()
 
     def advance(self):
@@ -108,26 +108,32 @@ class Parser:
         return statments
 
     def create_expression(self):
-        
-        error = None
 
         if self.token.value == 'variable':
             self.advance()
 
             if self.token.type != T_IDENTIFIER:
-                error = ErrorNode(errors.MissingIdentifier(self.idx, 'variable'))
+                idx = self.idx.clone()
+                while self.token.type not in (T_NL, T_EOF):
+                    self.advance()
+                return ErrorNode(errors.Expected(idx, 'Identifier', 'variable'))
             
             name = self.token
             self.advance()
             
             if self.token.type != T_EQL:
-                return None # NEED TO ADD ERROR
+                idx = self.idx.clone()
+                while self.token.type not in (T_NL, T_EOF):
+                    self.advance()
+                return ErrorNode(errors.Expected(idx, 'Assignment Operator', 'Identifier'))
             
             self.advance()
+
             value = self.create_expression()
 
-            if error:
-                return error
+            if value == None:
+                idx = self.idx.clone()
+                return ErrorNode(errors.Expected(idx, 'Value', 'Assignment Operator'))
             
             return VarAssignNode(name, value)
 
@@ -138,16 +144,28 @@ class Parser:
             if self.token.type in (T_IDENTIFIER, T_INT, T_FLOAT):
                 case.append(self.create_expression())
             else:
-                return None # need to add error
+                idx = self.idx.clone()
+                while self.token.value != 'end':
+                    self.advance()
+                return ErrorNode(errors.Expected(idx, 'Comparitable Value', 'if'))
 
             if self.token.type in (T_EQLS, T_GRT, T_LESS, T_NEQL):
                 case.append(self.token)
+            else:
+                idx = self.idx.clone()
+                while self.token.value != 'end':
+                    self.advance()
+                return ErrorNode(errors.Expected(idx, 'Comparison Operator', 'Comparitable Value'))
             self.advance()
 
             if self.token.type in (T_IDENTIFIER, T_INT, T_FLOAT):
                 case.append(self.create_expression())
             else:
-                return None # need to add error
+                idx = self.idx.clone()
+                while self.token.value != 'end':
+                    self.advance()
+                return ErrorNode(errors.Expected(idx, 'Comparitable Value', 'Comparison Operator'))
+            
             while self.token.type == T_NL:
                 self.advance()
 
@@ -174,6 +192,7 @@ class Parser:
                     else:
                         break
             return IfNode(case, contents)
+        
         if self.token.value == 'loop':
             self.advance()
 
@@ -182,7 +201,10 @@ class Parser:
             if self.token.type in (T_IDENTIFIER, T_INT, T_FLOAT):
                 loop_count = self.create_expression()
             else:
-                return None # need to add error
+                idx = self.idx.clone()
+                while self.token.value != 'end':
+                    self.advance()
+                return ErrorNode(errors.Expected(idx, 'Number', 'loop'))
             
             while self.token.type == T_NL:
                 self.advance()
@@ -209,17 +231,29 @@ class Parser:
             if self.token.type in (T_IDENTIFIER, T_INT, T_FLOAT):
                 case.append(self.create_expression())
             else:
-                return None # need to add error
+                idx = self.idx.clone()
+                while self.token.value != 'end':
+                    self.advance()
+                return ErrorNode(errors.Expected(idx, 'Comparitable Value', 'while'))
+
 
             if self.token.type in (T_EQLS, T_LESS, T_GRT, T_NEQL):
                 case.append(self.token)
+            else:
+                idx = self.idx.clone()
+                while self.token.value != 'end':
+                    self.advance()
+                return ErrorNode(errors.Expected(idx, 'Comparison Operator', 'Comparitable Value'))
 
             self.advance()
 
             if self.token.type in (T_IDENTIFIER, T_INT, T_FLOAT):
                 case.append(self.create_expression())
             else:
-                return None # need to add error
+                idx = self.idx.clone()
+                while self.token.value != 'end':
+                    self.advance()
+                return ErrorNode(errors.Expected(idx, 'Comparitable Value', 'Comparison Operator'))
             
             while self.token.type == T_NL:
                 self.advance()
@@ -242,7 +276,10 @@ class Parser:
             self.advance()
 
             if self.token.type != T_IDENTIFIER:
-                error = ErrorNode(errors.MissingIdentifier(self.idx, 'function'))
+                idx = self.idx.clone()
+                while self.token.value != 'end':
+                    self.advance()
+                return ErrorNode(errors.Expected(idx, 'Identifier', 'function'))
             
             name = self.token.value
             self.advance()
@@ -257,9 +294,6 @@ class Parser:
                     continue
                 else:
                     break
-
-            if error:
-                return error
 
             return FunctionAssignNode(name, contents)
 
@@ -303,8 +337,7 @@ class Parser:
             if self.token.type == T_RPAREN:
                 return expression
             else:
-                #ERROR NO END PAREN
-                pass
+                return ErrorNode(errors.Expected(self.idx, ')', '('))
         elif token.type == T_IDENTIFIER:
             self.advance()
             return AccessNode(token)

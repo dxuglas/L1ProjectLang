@@ -16,21 +16,33 @@ def run():
     # If an error is returned by the lexer, return the error.
     if error:
         return error
+    
+    # Creates an instance of the Parser, and then generates nodes with the
+    # passed Tokens
     nodes = parse.Parser(tokens).parse()
-    if error:
-        return error
 
+    # Creates a Symbol Table
     table = interpreter.SymbolTable()
+    # Creates a context to store the Symbol Table in
     context = interpreter.Context('main')
+    # Stores the Symbol Table in the context
     context.table = table
-    results = interpreter.Interpreter().primary_visit(nodes, context)
+
+    # Creates an instance of the Interpreter and then interprets the passed
+    # nodes into terminal outputs
+    results = interpreter.Interpreter().visit(nodes, context)
+
     return results
 
 if __name__ == '__main__':
+        # Runs the user code, and stores the results
         results = run()
+
         for result in results:
+            # If the result is a list, print the contents
             if isinstance(result, list):
                 for secondary in result:
                     print(secondary)
+            # Otherwise print the result        
             else:
                 print(result)
