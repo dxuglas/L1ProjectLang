@@ -3,3 +3,4 @@ variable b = 20
 
 # comment
 
+10 / 0

@@ -2,7 +2,7 @@ class Error:
     '''This class is the base class for all errors. It recieves the information
     errors from its derived classes and returns a formatted string containing
     the data provided. '''
-    def __init__(self, idx, type, contents) -> None:
+    def __init__(self, idx, type, contents = None) -> None:
         '''Stores initialisation values when new instances of the Error Class
         are created'''
         self.idx = idx
@@ -12,7 +12,15 @@ class Error:
     def __repr__(self) -> str:
         '''Returns the error message using the built in represent method'''
         return (f'{self.type} {self.contents} at column {self.idx.col}, ' 
-                f'line {self.idx.line}')
+    f'line {self.idx.line}') if self.contents else (f'{self.type} at column {self.idx.col}, ' 
+    f'line {self.idx.line}')
+    
+class DivisionByZeroError(Error):
+    '''This classs is derived from the Error class. It generates an error when
+    division by zero occurs, and formats it before passing into to its
+    parent class.'''
+    def __init__(self, idx) -> None:
+        super().__init__(idx, 'Division By Zero')
 
 class SyntaxError(Error):
     '''This class is derived from the Error class, but is also itself the base

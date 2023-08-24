@@ -1,4 +1,5 @@
 from lexer import *
+import position
 import operator
 
 ops = {
@@ -10,34 +11,44 @@ ops = {
 
 class String():
     def __init__(self, value) -> None:
+        '''This function stores the value of a string as it is intialised'''
         self.value = value
 
     def __repr__(self) -> str:
+        '''This represent function returns the value of a string'''
         return f'{self.value}'
 
 class Number():
-    def __init__(self, value) -> None:
+    def __init__(self, value, idx) -> None:
+        '''This function stores the value of a number as intialised'''
         self.value = value
+        self.idx = idx
     
     def added_to(self, other):
+        '''This function returns a number plus another'''
         return Number(self.value + other.value)
     
     def subbed_by(self, other):
+        '''This function returns a number minus another'''
         return Number(self.value - other.value)
     
     def multed_by(self, other):
+        '''This function returns a number multiplied by another'''
         return Number(self.value * other.value)
 
     def dived_by(self, other):
+        '''This function returns a number divided by another'''
         if other.value == 0:
-            pass # RETURN ERROR DIV BYZ ERORIR
+            return errors.DivisionByZeroError(other.idx)
 
         return Number(self.value / other.value)
     
     def pow(self, other):
+        '''This function returns a number to the power of another'''
         return Number(self.value ** other.value)
     
     def __repr__(self) -> str:
+        '''This represent function returns the value of the number'''
         return f'{self.value}'
     
 class Context():
@@ -47,14 +58,18 @@ class Context():
 
 class SymbolTable():
     def __init__(self) -> None:
+        '''This function is called when an instance of the symbol table is
+        created.'''
         self.symbols = {}
         self.parent = None
 
     def get_value(self, name):
+        '''This function retrieves the value of a symbol from the table'''
         value = self.symbols.get(name)
         return value
     
     def set_value(self, name, value):
+        '''This function stores the value of a symbol in the table'''
         self.symbols[name] = value
 
 class Interpreter:
@@ -155,7 +170,7 @@ class Interpreter:
     def visit_number_node(self, node, context):
         '''This is the visit function for Number Nodes, and simply
         returns the value of the node as a number'''
-        return Number(node.token.value)
+        return Number(node.token.value, node.idx)
 
     def visit_binary_op_node(self, node, context):
         '''This is the visit function for Binary Operator Nodes, and is
