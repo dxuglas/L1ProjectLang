@@ -3,4 +3,6 @@ variable b = 20
 
 # comment
 
-10 / 0
+while a < b
+1 + 1
+variable a = a + 1

@@ -26,26 +26,26 @@ class Number():
     
     def added_to(self, other):
         '''This function returns a number plus another'''
-        return Number(self.value + other.value)
+        return Number(self.value + other.value, self.idx)
     
     def subbed_by(self, other):
         '''This function returns a number minus another'''
-        return Number(self.value - other.value)
+        return Number(self.value - other.value, self.idx)
     
     def multed_by(self, other):
         '''This function returns a number multiplied by another'''
-        return Number(self.value * other.value)
+        return Number(self.value * other.value, self.idx)
 
     def dived_by(self, other):
         '''This function returns a number divided by another'''
         if other.value == 0:
             return errors.DivisionByZeroError(other.idx)
 
-        return Number(self.value / other.value)
+        return Number(self.value / other.value, self.idx)
     
     def pow(self, other):
         '''This function returns a number to the power of another'''
-        return Number(self.value ** other.value)
+        return Number(self.value ** other.value, self.idx)
     
     def __repr__(self) -> str:
         '''This represent function returns the value of the number'''
@@ -145,8 +145,10 @@ class Interpreter:
         contents = []
         for i in range(self.internal_visit(node.loop_count, context).value):
             for content in node.content:
-                contents.append(self.internal_visit(content, context))
-
+                c = self.internal_visit(content, context)
+                if c != None:
+                    contents.append(c)
+                
         return contents
     
     def visit_while_node(self, node, context):
@@ -156,7 +158,9 @@ class Interpreter:
         while True:
             if self.evaluate_case(node, context):
                 for content in node.content:
-                    contents.append(self.internal_visit(content, context))
+                    c = self.internal_visit(content, context)
+                    if c != None:
+                        contents.append(c)
             else:
                 break
 

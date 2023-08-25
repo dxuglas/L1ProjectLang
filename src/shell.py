@@ -37,7 +37,6 @@ def run():
 if __name__ == '__main__':
         # Runs the user code, and stores the results
         results = run()
-
         for result in results:
             # If the result is a list, print the contents
             if isinstance(result, list):
