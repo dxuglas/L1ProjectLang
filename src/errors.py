@@ -22,6 +22,10 @@ class DivisionByZeroError(Error):
     def __init__(self, idx) -> None:
         super().__init__(idx, 'Division By Zero')
 
+class ReassigmentError(Error):
+    def __init__(self, idx, name) -> None:
+        super().__init__(idx, f"Cannot Reassign '{name}'")
+
 class SyntaxError(Error):
     '''This class is derived from the Error class, but is also itself the base
     class for all Syntax Error types. It recieves the data on a Syntax Error

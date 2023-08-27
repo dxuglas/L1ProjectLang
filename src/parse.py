@@ -10,11 +10,12 @@ class ErrorNode:
         self.visit_name = 'error_node'
 
 class FunctionAssignNode:
-    def __init__(self, name, contents) -> None:
+    def __init__(self, name, contents, idx) -> None:
         '''This is the intialise function for the Function Assign Node, storing 
         the passed arguments'''
         self.name = name
         self.contents = contents
+        self.idx = idx
         self.visit_name = 'function_assign_node'
 
     def __repr__(self) -> str:
@@ -23,11 +24,12 @@ class FunctionAssignNode:
         return self.name
 
 class VarAssignNode:
-    def __init__(self, name, value) -> None:
+    def __init__(self, name, value, idx) -> None:
         '''This is the intialise function for the Variable Assign Node, storing 
         the passed arguments'''
         self.name = name
         self.value = value
+        self.idx = idx
         self.visit_name = 'var_assign_node'
         
 class AccessNode:
@@ -189,7 +191,9 @@ class Parser:
                 return ErrorNode(errors.Expected(idx, 'Value', 
                                                  'Assignment Operator'))
             
-            return VarAssignNode(name, value)
+            idx = self.idx.clone()
+
+            return VarAssignNode(name, value, idx)
 
         if self.token.value == 'if':
             self.advance()
@@ -355,7 +359,9 @@ class Parser:
                 else:
                     break
 
-            return FunctionAssignNode(name, contents)
+            idx = self.idx.clone()
+
+            return FunctionAssignNode(name, contents, idx)
 
         root = self.create_term()
 

@@ -41,7 +41,11 @@ if __name__ == '__main__':
             # If the result is a list, print the contents
             if isinstance(result, list):
                 for secondary in result:
-                    print(secondary)
-            # Otherwise print the result        
+                    if isinstance(secondary, list):
+                        for tertiary in secondary:
+                            print(tertiary)
+            # Otherwise print the result   
+                    else:
+                        print(secondary)     
             else:
                 print(result)

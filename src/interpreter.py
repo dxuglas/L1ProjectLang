@@ -67,8 +67,10 @@ class SymbolTable():
         value = self.symbols.get(name)
         return value
     
-    def set_value(self, name, value):
+    def set_value(self, name, value, idx):
         '''This function stores the value of a symbol in the table'''
+        if name in self.symbols:
+            return errors.ReassigmentError(idx, name)
         self.symbols[name] = value
 
 class Interpreter:
@@ -107,7 +109,10 @@ class Interpreter:
         value of the variable as a value in the symbol table.'''
         name = node.name.value
         value = self.internal_visit(node.value, context)
-        context.table.set_value(name, value)
+        idx = node.idx
+        error = context.table.set_value(name, value, idx)
+        if error:
+            return error
 
     def visit_function_assign_node(self, node, context):
         '''This is the visit function for Function Assign Nodes. It stores the
@@ -116,7 +121,11 @@ class Interpreter:
         contents = []
         for content in node.contents:
             contents.append(self.internal_visit(content, context))
-        context.table.set_value(name, contents)
+        idx = node.idx
+
+        error = context.table.set_value(name, contents, idx)
+        if error:
+            return error
 
     def visit_access_node(self, node, context):
         '''This is the visit function for Access Nodes. This accesses the
@@ -147,7 +156,6 @@ class Interpreter:
                 c = self.internal_visit(content, context)
                 if c != None:
                     contents.append(c)
-                
         return contents
     
     def visit_while_node(self, node, context):

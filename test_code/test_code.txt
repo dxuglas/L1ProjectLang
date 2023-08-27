@@ -1,8 +1,5 @@
-variable a = 10
-variable b = 20
-
-# comment
-
-function
+function a
 1 + 1
 end
+
+variable a = 10
