@@ -1,5 +1,4 @@
 from lexer import *
-import position
 import operator
 
 ops = {

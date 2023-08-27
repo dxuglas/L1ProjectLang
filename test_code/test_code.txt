@@ -3,6 +3,6 @@ variable b = 20
 
 # comment
 
-while a < b
+function
 1 + 1
-variable a = a + 1
+end

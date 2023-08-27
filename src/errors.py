@@ -12,8 +12,8 @@ class Error:
     def __repr__(self) -> str:
         '''Returns the error message using the built in represent method'''
         return (f'{self.type} {self.contents} at column {self.idx.col}, ' 
-    f'line {self.idx.line}') if self.contents else (f'{self.type} at column {self.idx.col}, ' 
-    f'line {self.idx.line}')
+    f'line {self.idx.line}') if self.contents else (f'{self.type} at '
+    f'column {self.idx.col}, line {self.idx.line}')
     
 class DivisionByZeroError(Error):
     '''This classs is derived from the Error class. It generates an error when
@@ -52,4 +52,5 @@ class Expected(SyntaxError):
     '''This class generates an error when the parser expects the code to follow
     a structure, but it does not''' 
     def __init__(self, idx, expected, type) -> None:
-        super().__init__(idx, f'Expected {expected} following', "'" + type + "'")
+        super().__init__(idx, f'Expected {expected} following', 
+                         "'" + type + "'")

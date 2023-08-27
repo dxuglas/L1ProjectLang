@@ -176,7 +176,8 @@ class Parser:
                 idx = self.idx.clone()
                 while self.token.type not in (T_NL, T_EOF):
                     self.advance()
-                return ErrorNode(errors.Expected(idx, 'Assignment Operator', 'Identifier'))
+                return ErrorNode(errors.Expected(idx, 'Assignment Operator', 
+                                                 'Identifier'))
             
             self.advance()
 
@@ -185,7 +186,8 @@ class Parser:
             # If the no value is assigned
             if value == None:
                 idx = self.idx.clone()
-                return ErrorNode(errors.Expected(idx, 'Value', 'Assignment Operator'))
+                return ErrorNode(errors.Expected(idx, 'Value', 
+                                                 'Assignment Operator'))
             
             return VarAssignNode(name, value)
 
@@ -199,7 +201,8 @@ class Parser:
                 idx = self.idx.clone()
                 while self.token.value != 'end':
                     self.advance()
-                return ErrorNode(errors.Expected(idx, 'Comparitable Value', 'if'))
+                return ErrorNode(errors.Expected(idx, 'Comparitable Value', 
+                                                 'if'))
 
             if self.token.type in (T_EQLS, T_GRT, T_LESS, T_NEQL):
                 case.append(self.token)
@@ -207,7 +210,8 @@ class Parser:
                 idx = self.idx.clone()
                 while self.token.value != 'end':
                     self.advance()
-                return ErrorNode(errors.Expected(idx, 'Comparison Operator', 'Comparitable Value'))
+                return ErrorNode(errors.Expected(idx, 'Comparison Operator', 
+                                                 'Comparitable Value'))
             self.advance()
 
             if self.token.type in (T_IDENTIFIER, T_INT, T_FLOAT):
@@ -216,7 +220,8 @@ class Parser:
                 idx = self.idx.clone()
                 while self.token.value != 'end':
                     self.advance()
-                return ErrorNode(errors.Expected(idx, 'Comparitable Value', 'Comparison Operator'))
+                return ErrorNode(errors.Expected(idx, 'Comparitable Value', 
+                                                 'Comparison Operator'))
             
             while self.token.type == T_NL:
                 self.advance()
@@ -286,7 +291,8 @@ class Parser:
                 idx = self.idx.clone()
                 while self.token.value != 'end':
                     self.advance()
-                return ErrorNode(errors.Expected(idx, 'Comparitable Value', 'while'))
+                return ErrorNode(errors.Expected(idx, 'Comparitable Value', 
+                                                 'while'))
 
 
             if self.token.type in (T_EQLS, T_LESS, T_GRT, T_NEQL):
@@ -295,7 +301,8 @@ class Parser:
                 idx = self.idx.clone()
                 while self.token.value != 'end':
                     self.advance()
-                return ErrorNode(errors.Expected(idx, 'Comparison Operator', 'Comparitable Value'))
+                return ErrorNode(errors.Expected(idx, 'Comparison Operator', 
+                                                 'Comparitable Value'))
 
             self.advance()
 
@@ -305,7 +312,8 @@ class Parser:
                 idx = self.idx.clone()
                 while self.token.value != 'end':
                     self.advance()
-                return ErrorNode(errors.Expected(idx, 'Comparitable Value', 'Comparison Operator'))
+                return ErrorNode(errors.Expected(idx, 'Comparitable Value', 
+                                                 'Comparison Operator'))
             
             while self.token.type == T_NL:
                 self.advance()
