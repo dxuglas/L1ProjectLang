@@ -43,11 +43,13 @@ KEYWORDS = [
     'end'
 ]
 
+
 # Create class to generate tokens.
 class Token:
     def __init__(self, type, value = None) -> None:
         '''Initialises an instance of the token class, storing the passed
-        arguments internally'''
+        arguments internally
+        '''
         self.type = type
         self.value = value
 
@@ -55,6 +57,7 @@ class Token:
         '''Sets the representation of the class when it is printed'''
         if self.value != None: return f'{self.type}: {self.value}'
         else: return self.type
+
 
 # Create lexer class to generate tokens based on user input.
 class Lexer:

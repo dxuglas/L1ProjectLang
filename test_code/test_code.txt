@@ -1,5 +1,11 @@
-function a
+function toni
 1 + 1
 end
 
-variable a = 10
+function noah
+1 + 1 
+end
+
+loop 5
+noah
+end
