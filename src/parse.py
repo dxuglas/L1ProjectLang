@@ -37,10 +37,11 @@ class VarAssignNode:
 
 
 class AccessNode:
-    def __init__(self, name) -> None:
+    def __init__(self, name, idx) -> None:
         '''This is the intialise function for the Access Node, storing the 
         passed arguments'''
         self.name = name
+        self.idx = idx
         self.visit_name = 'access_node'
 
 
@@ -315,6 +316,8 @@ class Parser:
                 else:
                     break
 
+            self.advance()
+
             return LoopNode(loop_count, contents)
         
         if self.token.value == 'while':
@@ -381,8 +384,8 @@ class Parser:
                 return ErrorNode(errors.Expected(idx, 'Identifier', 
                                                  'function'))
             name = self.token.value
-
-            # Advanced until the cotained code is reached
+            self.advance()
+            # Advanced until the contained code is reached
             while self.token.type == T_NL:
                 self.advance()
 
@@ -459,5 +462,5 @@ class Parser:
         # If the token is an identifier
         elif token.type == T_IDENTIFIER:
             self.advance()
-            # Return an access ndoe
-            return AccessNode(token)
+            # Return an access node
+            return AccessNode(token, self.idx.clone())

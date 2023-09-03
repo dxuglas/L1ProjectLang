@@ -65,7 +65,7 @@ class Lexer:
         '''Initialises the lexer, and sets it up ready to create tokens.'''
         self.data = data
         self.idx = position.Position(0, 1, 1)
-        self.char = self.data[0]
+        self.char = self.data[0] if len(self.data) > 1 else None
 
     def advance(self):
         '''Advances too the next character in the data, checking to ensure that

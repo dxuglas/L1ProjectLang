@@ -26,6 +26,12 @@ class ReassigmentError(Error):
     def __init__(self, idx, name) -> None:
         super().__init__(idx, f"Cannot Reassign '{name}'")
 
+class DeclerationError(Error):
+    '''This class generates an error when a function or variable is called
+    but has not been declared'''
+    def __init__(self, idx, type) -> None:
+        super().__init__(idx, f"'{type}' was not declared")
+
 class SyntaxError(Error):
     '''This class is derived from the Error class, but is also itself the base
     class for all Syntax Error types. It recieves the data on a Syntax Error

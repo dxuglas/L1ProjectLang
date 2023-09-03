@@ -1,4 +1,4 @@
-from lexer import *
+from lexer import * 
 import operator
 
 ops = {
@@ -69,8 +69,12 @@ class SymbolTable():
     
     def set_value(self, name, value, idx):
         '''This function stores the value of a symbol in the table'''
+        self.symbols[name] = value
+
+    def set_function(self, name, value, idx):
+        '''This function stores the value of functions in the table'''
         if name in self.symbols:
-            return errors.ReassigmentError(idx, name)
+           return errors.ReassigmentError(idx, name)
         self.symbols[name] = value
 
 class Interpreter:
@@ -122,8 +126,7 @@ class Interpreter:
         for content in node.contents:
             contents.append(self.internal_visit(content, context))
         idx = node.idx
-
-        error = context.table.set_value(name, contents, idx)
+        error = context.table.set_function(name, contents, idx)
         if error:
             return error
 
@@ -132,6 +135,8 @@ class Interpreter:
         values stored in the Symbol Table, and returns the value.'''
         name = node.name.value
         value = context.table.get_value(name)
+        if value == None:
+            return errors.DeclerationError(node.idx, node.name.value)
         return value
 
     def visit_if_node(self, node, context):
@@ -162,14 +167,11 @@ class Interpreter:
         '''This is the visit function for While Nodes. It evaluates the case,
         continuing to store the results of the loop while the case is true.'''
         contents = []
-        while True:
-            if self.evaluate_case(node, context):
-                for content in node.content:
-                    c = self.internal_visit(content, context)
-                    if c != None:
-                        contents.append(c)
-            else:
-                break
+        while self.evaluate_case(node, context):
+            for content in node.content:
+                c = self.internal_visit(content, context)
+                if c != None:
+                    contents.append(c)
 
         return contents
 
