@@ -150,6 +150,15 @@ class Parser:
         result = self.create_statments()
         return result 
 
+    def check_expected(self, expected, end, name, preceding):
+        if self.token.type not in expected:
+                # Make a clone of the index
+                idx = self.idx.clone()
+                # Advance until the end of the the decleration
+                while self.token.type not in end:
+                    self.advance()
+                return ErrorNode(errors.Expected(idx, name, preceding))
+
     def create_statments(self):
         '''This function creates statments, which can be simply defined as
         sections of the code. '''
@@ -170,31 +179,20 @@ class Parser:
     def create_expression(self):
         '''This function creates expresions, the highest level of the
         proccessing tree'''
+
         if self.token.value == 'variable':
             self.advance()
 
-            # If the token following a variable decleration is not a name
-            if self.token.type != T_IDENTIFIER:
-                # Make a clone of the index
-                idx = self.idx.clone()
-                # Advance until the end of the variable decleration
-                while self.token.type not in (T_NL, T_EOF):
-                    self.advance()
-                return ErrorNode(errors.Expected(idx, 'Identifier', 
-                                                 'variable'))
+            error = self.check_expected((T_IDENTIFIER), (T_NL, T_EOF), 
+                                        'Identifier', 'variable')
+            if error: return error
             
             name = self.token
-            self.advance()
+            self.advance()  
             
-            # If the token following the name is not an assignment operator
-            if self.token.type != T_EQL:
-                # Make a clone of the index
-                idx = self.idx.clone()
-                # Advance until the end of the variable declearation
-                while self.token.type not in (T_NL, T_EOF):
-                    self.advance()
-                return ErrorNode(errors.Expected(idx, 'Assignment Operator', 
-                                                 'Identifier'))
+            error = self.check_expected((T_EQL), (T_NL, T_EOF), 
+                                        'Assignment Operator', 'Identifier')
+            if error: return error
             
             self.advance()
             value = self.create_expression()
@@ -213,43 +211,28 @@ class Parser:
         if self.token.value == 'if':
             self.advance()
             case = []
-
-            # If the token following if is not a compartiable value
-            if self.token.type not in (T_IDENTIFIER, T_INT, T_FLOAT):
-                # Make a clone of the index
-                idx = self.idx.clone()
-                # Advance until the end of the if statment
-                while self.token.value != 'end':
-                    self.advance()
-                return ErrorNode(errors.Expected(idx, 'Comparitable Value', 
-                                                 'if'))
+            
+            error = self.check_expected((T_IDENTIFIER, T_INT, T_FLOAT), 
+                                        ('end'), 'Comparitable Value', 'if')
+            if error: return error
             
             # Append the value to the case
             case.append(self.create_expression())
 
-            # If the token following the value is not an operator
-            if self.token.type not in (T_EQLS, T_GRT, T_LESS, T_NEQL):
-                # Make a clone of the index
-                idx = self.idx.clone()
-                # Advance until the end of the if statment
-                while self.token.value != 'end':
-                    self.advance()
-                return ErrorNode(errors.Expected(idx, 'Comparison Operator', 
-                                                 'Comparitable Value'))
+
+            error = self.check_expected((T_EQLS, T_GRT, T_LESS, T_NEQL), 
+                                        ('end'), 'Comparison Operator', 
+                                        'Comparitable Value')
+            if error: return error
             
             # Append the operator to the case
             case.append(self.token)
             self.advance()
 
-            # If the token following the operator is not a comparitable value
-            if self.token.type not in (T_IDENTIFIER, T_INT, T_FLOAT):
-                # Make a clone of the index
-                idx = self.idx.clone()
-                # Advance until the end of the if statment
-                while self.token.value != 'end':
-                    self.advance()
-                return ErrorNode(errors.Expected(idx, 'Comparitable Value', 
-                                                 'Comparison Operator'))
+            error = self.check_expected((T_IDENTIFIER, T_INT, T_FLOAT), 
+                                        ('end'), 'Comparitable Value', 
+                                        'Comparison Operator')
+            if error: return error
             
             # Append the value to the case
             case.append(self.create_expression())
@@ -294,13 +277,10 @@ class Parser:
             self.advance()
             loop_count = None
 
-            # If the loop count value is not a valid value
-            if self.token.type not in (T_IDENTIFIER, T_INT, T_FLOAT):
-                # Return an error
-                idx = self.idx.clone()
-                while self.token.value != 'end':
-                    self.advance()
-                return ErrorNode(errors.Expected(idx, 'Number', 'loop'))
+            error = self.check_expected((T_IDENTIFIER, T_INT, T_FLOAT), 
+                                        ('end'), 'Number', 'loop')
+            if error: return error
+            
             loop_count = self.create_expression()
             
             # Advance until the contents is reached
@@ -324,38 +304,27 @@ class Parser:
             self.advance()
             case = []
 
-            # If the token following a while call is not a comparitable value
-            if self.token.type not in (T_IDENTIFIER, T_INT, T_FLOAT):
-                # Return an error
-                idx = self.idx.clone()
-                while self.token.value != 'end':
-                    self.advance()
-                return ErrorNode(errors.Expected(idx, 'Comparitable Value', 
-                                                 'while'))
-
+            error = self.check_expected((T_IDENTIFIER, T_INT, T_FLOAT), 
+                                        ('end'), 'Comparitable Value', 'while')
+            if error: return error
+            
+            # Append the value to the case
             case.append(self.create_expression())
 
-            # If the token following a value is not an operator
-            if self.token.type not in (T_EQLS, T_LESS, T_GRT, T_NEQL):
-                # Return an error
-                idx = self.idx.clone()
-                while self.token.value != 'end':
-                    self.advance()
-                return ErrorNode(errors.Expected(idx, 'Comparison Operator', 
-                                                 'Comparitable Value'))
 
+            error = self.check_expected((T_EQLS, T_GRT, T_LESS, T_NEQL), 
+                                        ('end'), 'Comparison Operator', 
+                                        'Comparitable Value')
+            if error: return error
+            
+            # Append the operator to the case
             case.append(self.token)
             self.advance()
 
-            # If the tolen following an operator is not a value
-            if self.token.type not in (T_IDENTIFIER, T_INT, T_FLOAT):
-                # Return an error
-                idx = self.idx.clone()
-                while self.token.value != 'end':
-                    self.advance()
-                return ErrorNode(errors.Expected(idx, 'Comparitable Value', 
-                                                 'Comparison Operator'))
-            case.append(self.create_expression())
+            error = self.check_expected((T_IDENTIFIER, T_INT, T_FLOAT), 
+                                        ('end'), 'Comparitable Value', 
+                                        'Comparison Operator')
+            if error: return error
 
             # Advance until the contents code is reached
             while self.token.type == T_NL:
@@ -374,15 +343,11 @@ class Parser:
 
         if self.token.value == 'function':
             self.advance()
+            
+            error = self.check_expected((T_IDENTIFIER), ('end'), 
+                                        'Identifier', 'function')
+            if error: return error
 
-            # If the token following a function declreation is not a name
-            if self.token.type != T_IDENTIFIER:
-                # Skip to the end of the function and return an error
-                idx = self.idx.clone()
-                while self.token.value != 'end':
-                    self.advance()
-                return ErrorNode(errors.Expected(idx, 'Identifier', 
-                                                 'function'))
             name = self.token.value
             self.advance()
             # Advanced until the contained code is reached
