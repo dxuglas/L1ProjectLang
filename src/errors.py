@@ -15,6 +15,7 @@ class Error:
     f'line {self.idx.line}') if self.contents else (f'{self.type} at '
     f'column {self.idx.col}, line {self.idx.line}')
     
+    
 class DivisionByZeroError(Error):
     '''This classs is derived from the Error class. It generates an error when
     division by zero occurs, and formats it before passing into to its
@@ -22,15 +23,18 @@ class DivisionByZeroError(Error):
     def __init__(self, idx) -> None:
         super().__init__(idx, 'Division By Zero')
 
+
 class ReassigmentError(Error):
     def __init__(self, idx, name) -> None:
         super().__init__(idx, f"Cannot Reassign '{name}'")
+
 
 class DeclerationError(Error):
     '''This class generates an error when a function or variable is called
     but has not been declared'''
     def __init__(self, idx, type) -> None:
         super().__init__(idx, f"'{type}' was not declared")
+
 
 class SyntaxError(Error):
     '''This class is derived from the Error class, but is also itself the base
@@ -42,12 +46,14 @@ class SyntaxError(Error):
         error message'''
         super().__init__(idx, 'Syntax Error: ' + type, contents)
 
+
 class InvalidCharacterError(SyntaxError):
     '''This class generates an error when an invalid character is found'''
     def __init__(self, idx, char) -> None:
         '''Creates a super of the parent Syntax Error class allowing us to 
         return our error message'''
         super().__init__(idx, 'Invalid Character', "'" + char + "'")
+
 
 class DecimalsInFloat(SyntaxError):
     '''This class generates errors when there are the incorrect number of
@@ -58,6 +64,7 @@ class DecimalsInFloat(SyntaxError):
         super().__init__(idx, ('Expected Single Decimal in Floating Point ' 
                                'Number, recieved'), dot_count)
         
+
 class Expected(SyntaxError):
     '''This class generates an error when the parser expects the code to follow
     a structure, but it does not''' 
