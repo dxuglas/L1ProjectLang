@@ -1,7 +1,6 @@
 import lexer
 import parse
 import interpreter
-
 import sys
 
 def run():
@@ -38,14 +37,4 @@ if __name__ == '__main__':
         # Runs the user code, and stores the results
         results = run()
         for result in results:
-            # If the result is a list, print the contents
-            if isinstance(result, list):
-                for secondary in result:
-                    if isinstance(secondary, list):
-                        for tertiary in secondary:
-                            print(tertiary)
-            # Otherwise print the result   
-                    else:
-                        print(secondary)     
-            else:
-                print(result)
+            print(result)            

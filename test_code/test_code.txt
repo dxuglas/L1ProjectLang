@@ -1,1 +1,15 @@
-variable = 10
+function a
+1 + 1
+end
+
+function b
+loop 5
+a
+end
+end
+
+b
+
+loop 6
+2 + 2
+end

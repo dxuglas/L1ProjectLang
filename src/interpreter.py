@@ -8,6 +8,23 @@ ops = {
     'T_GRT'  : operator.gt
 }
 
+
+class List():
+    def __init__(self, list) -> None:
+        '''This functions stores the list as it is intialised'''
+        self.list = list
+
+    def __repr__(self) -> str:
+        '''This represent function generates a string containing all of the
+        contents of the list formatted correctly.
+        '''
+        return_list = ''
+        for element in self.list:
+            return_list += f'{element}\n'
+        return_list = return_list[:-1]
+        return return_list
+
+
 class String():
     def __init__(self, value) -> None:
         '''This function stores the value of a string as it is intialised.'''
@@ -71,7 +88,7 @@ class SymbolTable():
         value = self.symbols.get(name)
         return value
     
-    def set_value(self, name, value, idx):
+    def set_value(self, name, value):
         '''This function stores the value of a symbol in the table.'''
         self.symbols[name] = value
 
@@ -79,7 +96,7 @@ class SymbolTable():
         '''This function stores the value of functions in the table.'''
         if name in self.symbols:
            return errors.ReassigmentError(idx, name)
-        self.symbols[name] = value
+        self.symbols[name] = List(value)
 
 
 class Interpreter:
@@ -102,7 +119,7 @@ class Interpreter:
         return method(node, context)
     
     def evaluate_case(self, node, context):
-        '''This function takes a node as an input and evaluates whether its
+        '''This function takes a nod e as an input and evaluates whether its
         case is True or False and then returns the value.
         '''
         primary = self.internal_visit(node.case[0], context).value
@@ -123,8 +140,7 @@ class Interpreter:
         '''
         name = node.name.value
         value = self.internal_visit(node.value, context)
-        idx = node.idx
-        error = context.table.set_value(name, value, idx)
+        error = context.table.set_value(name, value)
         if error:
             return error
 
@@ -165,7 +181,7 @@ class Interpreter:
         elif node.else_contents:
             for content in node.else_contents:
                 contents.append(self.internal_visit(content, context))
-        return contents
+        return List(contents)
 
     def visit_loop_node(self, node, context):
         '''This is the visit function for Loop Nodes. It checks the amount of
@@ -180,7 +196,7 @@ class Interpreter:
                 c = self.internal_visit(content, context)
                 if c != None:
                     contents.append(c)
-        return contents
+        return List(contents)
     
     def visit_while_node(self, node, context):
         '''This is the visit function for While Nodes. It evaluates the case,
@@ -196,7 +212,7 @@ class Interpreter:
                 if c != None:
                     contents.append(c)
 
-        return contents
+        return List(contents)
 
     def visit_string_node(self, node, context):
         '''This is the visit function for String Nodes, and simply returns
