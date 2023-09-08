@@ -39,7 +39,7 @@ KEYWORDS = [
     'if',
     'otherwise',
     'loop',
-    'while', # FIX THIS NEEDS COMMA WTF
+    'while',
     'end'
 ]
 
@@ -71,6 +71,7 @@ class Lexer:
         '''Advances too the next character in the data, checking to ensure that
         there isn't an index error.'''
         self.idx.advance(self.char)
+        # Aslong as the current char is in the length of data, store it. 
         if self.idx.idx < len(self.data):
             self.char = self.data[self.idx.idx]
         else:
@@ -83,14 +84,18 @@ class Lexer:
         created_tokens = []
 
         while self.char != None:
+            # Skip over spaces, returns, and tabs
             if self.char in {'\t', '\r', ' '}:
                 self.advance()
+            # Advance until the line is ended for comments
             elif self.char == '#':
                 while self.char != '\n':
                     self.advance() 
             elif self.char == '\n':
                 created_tokens.append(Token(T_NL))
                 self.advance()
+            # If the character matches any letter of the alphabet, either
+            # capital or lower case
             elif rx.match(r"[.a-zA-Z]", self.char):
                 created_tokens.append(self.identifier_token())
             elif self.char in '0123456789':
@@ -153,7 +158,9 @@ class Lexer:
         dot_count = 0
         start_idx = self.idx.clone()
 
+        # While the char is not None and is a number
         while self.char != None and rx.match(r"[.0-9]", self.char):
+            # This section of the code stores the number of dots in the number
             if self.char == '.':
                dot_count += 1
             num_as_str += self.char
@@ -166,7 +173,9 @@ class Lexer:
     def identifier_token(self):
         idf_as_str = ''
 
+        # While the current character is not None and is a number or letter
         while self.char != None and rx.match(r"[.0-9a-zA-Z_]", self.char):
+            # Add this character to the identifer
             idf_as_str += self.char
             self.advance()
 
@@ -178,6 +187,7 @@ class Lexer:
         string = ''
         self.advance()
 
+        # While the character is not None and the string is not ended with "'"
         while self.char != None and self.char != "'":
             string += self.char
             self.advance()

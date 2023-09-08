@@ -19,6 +19,7 @@ class List():
         contents of the list formatted correctly.
         '''
         return_list = ''
+        # For every element in the list add it to the string on its own line
         for element in self.list:
             return_list += f'{element}\n'
         return_list = return_list[:-1]
@@ -114,18 +115,21 @@ class Interpreter:
         '''This is the visit function used internally to visit nodes stored
         inside other nodes.
         '''
+        # Get the visit name of the current node and visit it. 
         method_name = f'visit_{node.visit_name}'
         method = getattr(self, method_name)
         return method(node, context)
     
     def evaluate_case(self, node, context):
-        '''This function takes a nod e as an input and evaluates whether its
+        '''This function takes a node as an input and evaluates whether its
         case is True or False and then returns the value.
         '''
+        # Get the value of all three parts of the case.
         primary = self.internal_visit(node.case[0], context).value
         op = node.case[1]
         secondary = self.internal_visit(node.case[2], context).value
 
+        # Try to check whether the case is true or false.
         try: return ops[f'{op}'](primary, secondary)
         except: return False
 
@@ -152,6 +156,8 @@ class Interpreter:
         name = node.name
         idx = node.idx
         contents = []
+        # For every content node, append it to the new contents list once it
+        # has been visited
         for content in node.contents:
             contents.append(self.internal_visit(content, context))
         error = context.table.set_function(name, contents, idx)
