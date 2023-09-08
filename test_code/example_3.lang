@@ -1,3 +1,4 @@
+# Define 3 variables
 variable a = 'string'
 variable b = 'string2'
 variable c = 'string2'

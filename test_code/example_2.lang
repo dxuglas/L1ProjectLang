@@ -1,3 +1,4 @@
+# Defines two variables
 variable x = 5
 variable y = 10
 

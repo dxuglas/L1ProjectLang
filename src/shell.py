@@ -11,7 +11,7 @@ def run():
     data = open(data)
 
     # Creates an instance of the lexer class, and then generates tokens.
-    tokens, error = lexer.Lexer(data.read()).create_tokens() 
+    tokens, error = lexer.Lexer(data.read()).create_tokens()  
     # If an error is returned by the lexer, return the error.
     if error:
         return error

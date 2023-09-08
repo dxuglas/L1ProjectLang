@@ -1,7 +1,11 @@
+# Defines a function called test_function
 function test_function
+  # Loops the code 5 times
   loop 5
+    # Prints 1 + 1
     1 + 1
   end
 end
 
+# Calls the function test_function
 test_function

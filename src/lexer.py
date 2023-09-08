@@ -23,7 +23,7 @@ T_STRING = 'T_STRING'
 # Identifier tokens.
 T_KEYWORD = 'T_KEYWORD'
 T_IDENTIFIER = 'T_INDENTIFIER'
-# Equal token.
+# Operators.
 T_EQL = 'T_EQL'
 T_EQLS = 'T_EQLS'
 T_NEQL = 'T_NEQL'

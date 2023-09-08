@@ -126,7 +126,8 @@ class Interpreter:
         op = node.case[1]
         secondary = self.internal_visit(node.case[2], context).value
 
-        return ops[f'{op}'](primary, secondary)
+        try: return ops[f'{op}'](primary, secondary)
+        except: return False
 
     def visit_error_node(self, node, context):
         '''This is the visit function for Error Nodes. It returns the error
@@ -202,7 +203,6 @@ class Interpreter:
         continuing to store the results of the loop while the case is true.
         '''
         contents = []
-
         # While the case of the while node is true:
         while self.evaluate_case(node, context):
             # Run trough the contents of the node and append them to contents

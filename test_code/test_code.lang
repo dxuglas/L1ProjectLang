@@ -1,0 +1,5 @@
+variable a = 'string'
+
+if a < 4
+  a
+end
