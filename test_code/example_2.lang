@@ -1,0 +1,8 @@
+variable x = 5
+variable y = 10
+
+if x < y
+  x + y
+otherwise
+  x - y
+end

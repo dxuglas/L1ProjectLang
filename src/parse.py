@@ -167,7 +167,9 @@ class Parser:
         # While the parser has not reached the end of the file passed
         while self.token.type != T_EOF: 
             # Create an expression and store the result in statments
-            statments.append(self.create_expression())
+            statment = self.create_expression()
+            if statment != None:
+                statments.append(statment)
             if self.token.value == 'end':
                 self.advance()
             # Advance until a new statment is reached, allowing multiple lines
@@ -252,11 +254,11 @@ class Parser:
                 # Otherwise return an error for two statments
                 else:
                     break # ADD ERROR FOR TOO MANY STATMENTS ON ONE LINE
-
             # While the token is equal to otherwise (Allowing future
             # implimentation of otherwise if statments)
+            else_contents = []
             while self.token.value == 'otherwise':
-                else_contents = []
+                self.advance()
                 # Advance while the token is T_NL
                 while self.token.type == T_NL:
                     self.advance()
@@ -270,8 +272,8 @@ class Parser:
                     # Otherwise return error for two statments
                     else:
                         break
-
-            return IfNode(case, contents)
+            
+            return IfNode(case, contents, else_contents)
         
         if self.token.value == 'loop':
             self.advance()

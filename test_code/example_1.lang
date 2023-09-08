@@ -1,0 +1,7 @@
+function test_function
+  loop 5
+    1 + 1
+  end
+end
+
+test_function

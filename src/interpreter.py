@@ -172,7 +172,6 @@ class Interpreter:
         evaluates the case, and then returns the correct contents of the node.
         '''
         contents = []
-
         # If the case of the if statment is true:
         if self.evaluate_case(node, context):
             for content in node.contents:

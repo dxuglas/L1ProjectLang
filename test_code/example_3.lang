@@ -1,0 +1,11 @@
+variable a = 'string'
+variable b = 'string2'
+variable c = 'string2'
+
+if a == b
+  a
+otherwise
+  if b == c
+    b
+  end
+end

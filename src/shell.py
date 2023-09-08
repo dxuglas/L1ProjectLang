@@ -15,11 +15,9 @@ def run():
     # If an error is returned by the lexer, return the error.
     if error:
         return error
-    
     # Creates an instance of the Parser, and then generates nodes with the
     # passed Tokens
     nodes = parse.Parser(tokens).parse()
-
     # Creates a Symbol Table
     table = interpreter.SymbolTable()
     # Creates a context to store the Symbol Table in

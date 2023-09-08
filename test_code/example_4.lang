@@ -1,0 +1,16 @@
+# Defines number variables
+variable num_a = 1
+variable num_b = 10
+# Defines string variables
+variable string_a = 'string_a'
+variable string_b = 'string_b'
+
+function func_a
+  if num_a == string_a
+    string_b
+  otherwise
+    num_b * string_a
+  end
+end
+
+func_a
